@@ -1,0 +1,21 @@
+[0:00:00] ---
+[0:00:00] Student Robotics OS 2023.0.0
+[0:00:00] Is there something you'd like us to add to the kit or API? 💡
+[0:00:00] Perhaps there's something you think we should improve? 🛠️
+[0:00:00] Let us know your feedback about your experience using our kit at https://studentrobotics.org/kit-feedback 🗣️
+[0:00:00] ---
+[0:00:00] === LOG STARTED ===
+[0:00:03.766326] [ WARN:0@1.719] global /usr/src/debug/opencv/4.5.5-r0/git/modules/videoio/src/cap_v4l.cpp (889) open VIDEOIO(V4L2:/dev/video1): can't open camera by index
+[0:00:04.286624] [ WARN:0@2.240] global /usr/src/debug/opencv/4.5.5-r0/git/modules/videoio/src/cap_v4l.cpp (889) open VIDEOIO(V4L2:/dev/video2): can't open camera by index
+[0:00:04.778806] [ WARN:0@2.732] global /usr/src/debug/opencv/4.5.5-r0/git/modules/videoio/src/cap_v4l.cpp (889) open VIDEOIO(V4L2:/dev/video3): can't open camera by index
+[0:00:05.270271] [ WARN:0@3.223] global /usr/src/debug/opencv/4.5.5-r0/git/modules/videoio/src/cap_v4l.cpp (889) open VIDEOIO(V4L2:/dev/video4): can't open camera by index
+[0:00:05.722765] [ WARN:0@3.676] global /usr/src/debug/opencv/4.5.5-r0/git/modules/videoio/src/cap_v4l.cpp (889) open VIDEOIO(V4L2:/dev/video5): can't open camera by index
+[0:00:06.201224] [ WARN:0@4.154] global /usr/src/debug/opencv/4.5.5-r0/git/modules/videoio/src/cap_v4l.cpp (889) open VIDEOIO(V4L2:/dev/video6): can't open camera by index
+[0:00:06.674406] [ WARN:0@4.627] global /usr/src/debug/opencv/4.5.5-r0/git/modules/videoio/src/cap_v4l.cpp (889) open VIDEOIO(V4L2:/dev/video7): can't open camera by index
+[0:00:08.619433] /usr/lib/python3.10/site-packages/j5/backends/hardware/j5/serial.py ERROR - 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte in b'\xff'
+[0:00:09.974770] sr.robot3.robot INFO - Found Ruggeduino - 75230313833351617091
+[0:00:09.980811] sr.robot3.robot INFO - Found Student Robotics v4 Motor Board - SR0UCD
+[0:00:09.993361] sr.robot3.robot INFO - Found Student Robotics v4 Servo Board - sr0UG3K
+[0:00:09.999093] sr.robot3.robot INFO - Found Student Robotics v4 Power Board - sr0GU20
+[0:00:10.007397] sr.robot3.robot INFO - Found Zoloto Camera Board - 0
+[0:00:10.013430] sr.robot3.robot INFO - Waiting for start signal
