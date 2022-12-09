@@ -1,6 +1,5 @@
 from sr.robot3 import *
 import time
-
 R = Robot()
 
 def sleep(duration):
