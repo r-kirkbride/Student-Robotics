@@ -5,6 +5,12 @@ import time
 R = Robot()
 
 def bulletPoint2():
+    
+    markers = R.camera.see()
+    closestMarker = markers[0]
+    for marker in markers:
+        if marker.distance < closestMarker.distance:
+            closestMarker = marker
 
     while True:
 
@@ -19,11 +25,16 @@ def bulletPoint2():
         #checks if angle is a certain value and lights up the correct LED accordingly
         if angle > 30:
             R.kch.leds[UserLED.A] = Colour.BLUE
+            R.kch.leds[UserLED.C] = Colour.OFF
+            R.kch.leds[UserLED.B] = Colour.OFF
         elif angle < -30:
             R.kch.leds[UserLED.C] = Colour.BLUE
+            R.kch.leds[UserLED.A] = Colour.OFF
+            R.kch.leds[UserLED.B] = Colour.OFF
         else:
             R.kch.leds[UserLED.B] = Colour.BLUE
-    
+            R.kch.leds[UserLED.A] = Colour.OFF
+            R.kch.leds[UserLED.C] = Colour.OFF
         time.sleep(0.5)
 
 bulletPoint2()
