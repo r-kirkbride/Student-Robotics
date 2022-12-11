@@ -37,6 +37,5 @@ def bulletPoint3():
                 R.kch.leds[UserLED.A] = Colour.OFF
             
             time.sleep(0.5)
-
-
-
+            
+bulletPoint3()
