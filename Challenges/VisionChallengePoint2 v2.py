@@ -29,11 +29,11 @@ def bulletPoint2():
         print(angle)
         
         #checks if angle is a certain value and lights up the correct LED accordingly
-        if angle < 60:
+        if angle > 30:
             R.kch.leds[UserLED.A] = Colour.BLUE
             R.kch.leds[UserLED.C] = Colour.OFF
             R.kch.leds[UserLED.B] = Colour.OFF
-        elif angle > 120:
+        elif angle < -30:
             R.kch.leds[UserLED.C] = Colour.BLUE
             R.kch.leds[UserLED.A] = Colour.OFF
             R.kch.leds[UserLED.B] = Colour.OFF
