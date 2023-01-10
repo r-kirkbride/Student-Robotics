@@ -8,7 +8,9 @@
 void setup() {
   Serial.begin(SERIAL_BAUD);
   //KEGS SR additions begin
-  int motors[2] = {0,0};
+  volatile int motors[2] = {0,0};
+  attachInterrupt(digitalPinToInterrupt(2), updateEncoderLeft, RISING);
+  attachInterrupt(digitalPinToInterrupt(3), updateEncoderRight, RISING);
   //KEGS SR additions end
 }
 
@@ -48,12 +50,12 @@ void command_mode(int mode) {
 
 //KEGS SR additions begin
 void command_rotation_read(int motor) {
-  Serial.print(value);
+  Serial.print(motors[motor]);
 }
 
 void command_rotation_reset() {
-  motor[0] = 0;
-  motor[1] = 0;
+  motors[0] = 0;
+  motors[1] = 0;
 }
 
 //KEGS SR additions end
@@ -90,10 +92,13 @@ void loop() {
         Serial.print(FW_VER);
         break;
       // KEGS SR additions begin
-      case 'mread':
-        command_rotation_read();
+      case 'x':
+        command_rotation_read(0);
         break;
-      case 'mreset':
+      case 'y':
+        command_rotation_read(1);
+        break;
+      case 's':
         command_rotation_reset();
         break;
       //KEGS SR additions end
@@ -105,3 +110,17 @@ void loop() {
     Serial.print("\n");
   }
 }
+
+//KEGS SR additions start
+void updateEncoderLeft()
+{
+  // Increment value for each pulse from encoder
+  motors[0]++;
+}
+
+void updateEncoderRight()
+{
+  // Increment value for each pulse from encoder
+  motors[1]++;
+}
+//KEGS SR additions end
