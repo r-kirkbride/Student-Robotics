@@ -18,7 +18,7 @@ def bulletPoint3():
         #this first ensures that the marker spotted is in the list of markers seen
         if firstMarker in markers:
             #Converts the angle recieved by the camera from raidans to degrees to ensure the math library can perfrom trig on them
-            angle = firstMarker.spherical.rot_y * (180/math.pi)
+            angle = firstMarker.orientation.rot_y * (180/math.pi)
 
             #checks the horizontal distance of the marker relative to the camera and lights and turns off the LEDs accordingly 
             if math.sin(angle) * firstMarker.distance > 200:
