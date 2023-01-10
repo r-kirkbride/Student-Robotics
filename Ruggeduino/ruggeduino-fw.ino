@@ -8,6 +8,10 @@
 void setup() {
   Serial.begin(SERIAL_BAUD);
   //KEGS SR additions begin
+  pinMode(1, INPUT_PULLUP);
+  pinMode(2, INPUT_PULLUP);
+  pinMode(3, INPUT_PULLUP);
+  pinMode(4, INPUT_PULLUP);
   volatile int motors[2] = {0,0};
   attachInterrupt(digitalPinToInterrupt(2), updateEncoderLeft, RISING);
   attachInterrupt(digitalPinToInterrupt(3), updateEncoderRight, RISING);
