@@ -5,6 +5,10 @@
 
 #define FW_VER 1
 
+//KEGS SR additions begin
+volatile int motors[2] = {0,0};
+//KEGS SR additions end
+
 void setup() {
   Serial.begin(SERIAL_BAUD);
   //KEGS SR additions begin
@@ -12,7 +16,6 @@ void setup() {
   pinMode(2, INPUT_PULLUP);
   pinMode(3, INPUT_PULLUP);
   pinMode(4, INPUT_PULLUP);
-  volatile int motors[2] = {0,0};
   attachInterrupt(digitalPinToInterrupt(2), updateEncoderLeft, RISING);
   attachInterrupt(digitalPinToInterrupt(3), updateEncoderRight, RISING);
   //KEGS SR additions end
