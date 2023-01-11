@@ -6,11 +6,14 @@ import math
 class robot:
     
     def __init__(self):
+        
+        #Creates an instance of the robot object from sr.robot3 and saves it as in attribute to the instance of this class
         self.R = Robot() 
         
         markers = self.R.camera.see_ids()
         
-        #determines the starting corner of the robot based on placement of the robot and the defined orietnation based on the srategy
+        #determines the starting corner of the robot 
+        ##This because a each of the following markers IDs: 0, 7, 14, 21 is in each of the 4 corners
         if 14 in markers:
             self.starting_corner = 1
         elif 7 in markers:
@@ -22,6 +25,7 @@ class robot:
     
     def moveDist(self, dist, speed=0.5):
         
+        #speed defaults to 0.5 so it doesn't need to be passed
         rotDist = 100 * math.pi
         self.R.ruggeduino.command("s")
         self.R.motor_board.motors[0].power = speed
@@ -37,9 +41,12 @@ class robot:
 
     def faceDirection(self, direc, speed=0.5):
         
+        #this method is used for turning the robot to face one of the 4 walls 
         #uses a 2D array to determine wall markers in each direction relative to a birds eye perspective 
         wallMarkers = [[0,1,2,3,4,5,6], [7,8,9,10,11,12,13], [14,15,16,17,18,19,20], [21,22,23,24,25,26,27]]
+        #input sanitation 
         direc = direc.lower()
+        #chooses the used markers based on input given
         if direc == "north":
             usedMarkers = wallMarkers[0]
         elif direc == "south":
@@ -123,6 +130,7 @@ class robot:
             self.R.motor_board.motors[1].power = 0
             markers = self.R.camera.see_ids()
 
+        #sets up the initial distance as it compares the distance to the marker to previous distances  
         markers = self.R.camera.see()
         for marker in markers:
             if marker.id == marker_id:
@@ -157,3 +165,7 @@ class robot:
                 usedMarker = marker
         #adds 5cm buffer between robot and wall
         self.moveDist(usedMarker.distance-50, speed)
+    
+    def deployArms(self):
+        self.R.servo_board.servos[1].position = 0.8
+        self.R.servo_board.servos[2].position = -0.8
