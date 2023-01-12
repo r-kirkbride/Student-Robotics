@@ -61,7 +61,7 @@ class robot:
             usedMarkers = wallMarkers[3]
         
         markers = self.R.camera.see_ids()
-        #creates an array of markers that the camera both sees and are on the correct wall realative to the robot 
+        #creates an array of markers that the camera both sees and are on the correct wall relative to the robot 
         intersection = [marker for marker in markers if marker in usedMarkers]
         
         #rotates the robot until the above task is complete 
