@@ -80,11 +80,12 @@ class robot:
         intersection2 = [marker for marker in markersFull if marker.id in usedMarkers]
         
         #checks for the angle to the wall within a 5 degree margin of error and turns to face that wall accordingly 
-        while True:
+        Facing = False
+        while not Facing:
             #loops through each value the set of markers seen and checks for perpendicularity 
             for i in intersection2:
                 if i.orientation.rot_y * (180/math.pi) > -5 and i.orientation.rot_y * (180/math.pi) < 5:
-                    break
+                    Facing = True
             self.R.motor_board.motors[0].power = 0.2
             self.R.motor_board.motors[1].power = -0.2
             time.sleep(0.1)
