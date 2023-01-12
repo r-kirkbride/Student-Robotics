@@ -22,7 +22,11 @@ class robot:
             self.starting_corner = 3
         elif 21 in markers:
             self.starting_corner = 2
-    
+        
+        #Deploys arms to the correct position upon initialising the robot 
+        self.R.servo_board.servos[1].position = 0.8
+        self.R.servo_board.servos[2].position = -0.8
+
     def moveDist(self, dist, speed=0.5):
         
         #speed defaults to 0.5 so it doesn't need to be passed
@@ -166,6 +170,3 @@ class robot:
         #adds 5cm buffer between robot and wall
         self.moveDist(usedMarker.distance-50, speed)
     
-    def deployArms(self):
-        self.R.servo_board.servos[1].position = 0.8
-        self.R.servo_board.servos[2].position = -0.8
