@@ -6,7 +6,7 @@
 #define FW_VER 1
 
 //KEGS SR additions begin
-volatile int motors[2] = {0,0};
+volatile long motors[2] = {0,0};
 //KEGS SR additions end
 
 void setup() {
@@ -57,12 +57,16 @@ void command_mode(int mode) {
 
 //KEGS SR additions begin
 void command_rotation_read(int motor) {
+  noInterrupts()
   Serial.print(motors[motor]);
+  interrupts()
 }
 
 void command_rotation_reset() {
+  noInterrupts()
   motors[0] = 0;
   motors[1] = 0;
+  interrupts()
 }
 
 //KEGS SR additions end
