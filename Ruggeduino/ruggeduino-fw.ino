@@ -57,16 +57,16 @@ void command_mode(int mode) {
 
 //KEGS SR additions begin
 void command_rotation_read(int motor) {
-  noInterrupts()
+  noInterrupts();
   Serial.print(motors[motor]);
-  interrupts()
+  interrupts();
 }
 
 void command_rotation_reset() {
-  noInterrupts()
+  noInterrupts();
   motors[0] = 0;
   motors[1] = 0;
-  interrupts()
+  interrupts();
 }
 
 //KEGS SR additions end
