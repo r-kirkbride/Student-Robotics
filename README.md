@@ -41,3 +41,7 @@ takes two arguments, a number for the marker id and a speed which defaults to 0.
 R.goToMarker(markerID, speed=0.5)
 
 takes two arguments, a number for the marker id and a speed which defaults to 0.5. This rotates the robot until it is facing the specified marker, then moves in a straight line towards the marker until it is 5cm away 
+
+R.driveToMarker()
+
+takes no arguments (will be changed once R.faceMarker() is improved). This is used to tell the robot when to stop in relation to a target marker or an obstacle, which is figured out by the method.
