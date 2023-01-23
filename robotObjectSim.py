@@ -216,7 +216,27 @@ class robot:
             intersection = [marker for marker in markers if marker in self.wallMarkers[self.starting_corner][:len(self.wallMarkers[self.starting_corner])//2]]
         self.goToMarker(intersection[0])
     def grabBoxes(self):
-        pass
+        self.R.motor_board.motors[0].power = -0.25
+        self.R.motor_board.motors[1].power = 0.25
+        self.R.sleep(0.5)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+        markers = self.R.camera.see()
+        for marker in markers:
+            if marker.id > 27:
+                print(marker.distance)
+                print(marker.id)
+                self.goToMarker(marker.id)
+                if self.R.ruggeduino.pins[A4].analogue_read() > 1:
+                    print(self.R.ruggeduino.pins[A4].analogue_read())
+                    self.R.servo_board.servos[1].position = 0
+                    while not self.R.ruggeduino.pins[2].digital_read():
+                        self.R.motor_board.motors[0].power = -0.5
+                        self.R.motor_board.motors[1].power = -0.5
+                        self.R.sleep(0.5)
+                        self.R.motor_board.motors[0].power = 0
+                        self.R.motor_board.motors[1].power = 0
+                    self.R.servo_board.servos[0].position = 1
     
     #drives to marker until close enough
     def driveToMarker(self):
