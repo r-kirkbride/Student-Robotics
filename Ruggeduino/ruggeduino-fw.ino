@@ -73,6 +73,17 @@ void command_rotation_reset() {
 
 void loop() {
   // Fetch all commands that are in the buffer
+  currentL = digitalRead(2);
+  currentR = digitalRead(3);
+  if ((currentL == 1) && (previousL == 0)){
+    motors[0] ++;
+  }
+  if ((currentR == 1) && (previousR == 0)){
+    motors[1] ++;
+  }
+  previousL = currentL;
+  previousR = currentR;
+
   while (Serial.available()) {
     currentL = digitalRead(2);
     currentR = digitalRead(3);
@@ -84,6 +95,7 @@ void loop() {
     }
     previousL = currentL;
     previousR = currentR;
+  
     int selected_command = Serial.read();
     // Do something different based on what we got:
     switch (selected_command) {
