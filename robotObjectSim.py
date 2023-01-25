@@ -25,10 +25,22 @@ class robot:
         elif 21 in markers:
             self.starting_corner = 2
         
+        self.R.motor_board.motors[0].power = -0.3
+        self.R.motor_board.motors[1].power = 0.3
+        self.R.sleep(0.5)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
        
         #Deploys arms to the correct position upon initialising the robot 
         #self.R.servo_board.servos[1].position = 0.8
         #self.R.servo_board.servos[2].position = -0.8
+    def move(self):
+        self.R.motor_board.motors[0].power = 0.5
+        self.R.motor_board.motors[1].power = 0.5
+        self.R.sleep(0.5)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+        
     def spin(self):
         self.R.motor_board.motors[0].power = 0.5
         self.R.motor_board.motors[1].power = -0.5
@@ -191,6 +203,8 @@ class robot:
         time.sleep(0.1)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
+        
+    
 
     def goToMarker(self, marker_id, speed=0.5):
         self.faceMarker(marker_id)
@@ -215,6 +229,7 @@ class robot:
             markers = self.R.camera.see_ids()
             intersection = [marker for marker in markers if marker in self.wallMarkers[self.starting_corner][:len(self.wallMarkers[self.starting_corner])//2]]
         self.goToMarker(intersection[0])
+    
     def grabBoxes(self):
         self.R.motor_board.motors[0].power = -0.25
         self.R.motor_board.motors[1].power = 0.25
@@ -239,9 +254,11 @@ class robot:
                     self.R.servo_board.servos[0].position = 1
     
     #drives to marker until close enough
-    def driveToMarker(self):
+    def driveToMarker(self, marker):
 
         #hard coded testing for the method, can be removed once goToMarker is accurate
+        
+        self.R.faceMarker(marker)
         self.R.motor_board.motors[1].power = 0.5
         self.R.sleep(0.28)       
         self.R.motor_board.motors[0].power = 0.5
@@ -264,7 +281,7 @@ class robot:
         #checks whether closest thing is a marker or an obstacle and sets the distance to stop accordingly
         markers = self.R.camera.see()
         if markers[0].id > 27:
-            toStop = 0.3
+            toStop = 0.1
         else:
             toStop = 0.5
 
@@ -279,3 +296,94 @@ class robot:
             going = False
         
         return going
+    
+    def faceClosestToken(self, counter):
+        markers = self.R.camera.see()
+        idx = 0 
+        minDist = 9000000000 
+        for i in range(counter):
+            self.R.motor_board.motors[0].power = 0.08
+            self.R.motor_board.motors[1].power = -0.08
+            self.R.sleep(0.5)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+            if markers[0].distance < minDist and markers[0].id > 27:
+                idx = i 
+            #for marker in markers:
+                #if marker.id > 27:
+                    #if marker.distance < minDist:
+                        #print(marker.distance, marker.id)
+                        #idx = i 
+            markers = self.R.camera.see()
+        for i in range(counter-idx):
+            self.R.motor_board.motors[0].power = -0.08
+            self.R.motor_board.motors[1].power = 0.08
+            self.R.sleep(0.5)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+        
+        markers = self.R.camera.see()
+        usedAngle = abs(markers[0].spherical.rot_y) 
+        minAngle = 999090909
+        while abs(markers[0].spherical.rot_y) <= minAngle:
+            self.R.motor_board.motors[0].power = -0.01
+            self.R.motor_board.motors[1].power = 0.01
+            self.R.sleep(0.5)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+            if abs(markers[0].spherical.rot_y) < minAngle:
+                minAngle = abs(markers[0].spherical.rot_y)
+            markers = self.R.camera.see()
+        self.R.motor_board.motors[0].power = 0.01
+        self.R.motor_board.motors[1].power = -0.01
+        self.R.sleep(0.5)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+
+
+    def getAngles(self):
+        markers = self.R.camera.see()
+        for marker in markers:
+            print(marker.spherical.rot_y)
+    
+    def getBox(self):
+        while True:
+            self.faceClosestToken(2)
+            going = self.checkMarker()
+            idx = 0 
+            while going:
+                self.R.motor_board.motors[0].power = 0.5
+                self.R.motor_board.motors[1].power = 0.5
+                self.R.sleep(0.5)
+                self.R.motor_board.motors[0].power = 0
+                self.R.motor_board.motors[1].power = 0
+                idx+=1
+                going = self.checkMarker()
+            self.R.servo_board.servos[0].position = 0.5
+            self.R.servo_board.servos[1].position = 0.5
+            self.R.sleep(0.3)
+            self.R.motor_board.motors[0].power = 0.25
+            self.R.motor_board.motors[1].power = -0.25
+            self.R.sleep(1)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+            for i in range(idx+3):
+                self.R.motor_board.motors[0].power = 0.5
+                self.R.motor_board.motors[1].power = 0.5
+                self.R.sleep(0.5)
+                self.R.motor_board.motors[0].power = 0
+                self.R.motor_board.motors[1].power = 0
+            self.R.servo_board.servos[0].position = -1
+            self.R.servo_board.servos[1].position = -1
+            self.R.motor_board.motors[0].power = -0.5
+            self.R.motor_board.motors[1].power = -0.5
+            self.R.sleep(0.5)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+            self.spin()
+            for i in range(3):
+                self.R.motor_board.motors[0].power = 0.5
+                self.R.motor_board.motors[1].power = 0.5
+                self.R.sleep(0.5)
+                self.R.motor_board.motors[0].power = 0
+                self.R.motor_board.motors[1].power = 0
