@@ -281,7 +281,7 @@ class robot:
         #checks whether closest thing is a marker or an obstacle and sets the distance to stop accordingly
         markers = self.R.camera.see()
         if markers[0].id > 27:
-            toStop = 0.1
+            toStop = 0.2
         else:
             toStop = 0.5
 
@@ -322,20 +322,28 @@ class robot:
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
         
+        if idx == 0:
+            self.faceClosestToken(counter+1)
         markers = self.R.camera.see()
-        usedAngle = abs(markers[0].spherical.rot_y) 
+        markers = [marker for marker in markers if marker.id > 27]
+        usedAngle = markers[0].spherical.rot_y
+        if usedAngle < 0:
+            speed = -0.01
+        else:
+            speed = 0.01 
         minAngle = 999090909
         while abs(markers[0].spherical.rot_y) <= minAngle:
-            self.R.motor_board.motors[0].power = -0.01
-            self.R.motor_board.motors[1].power = 0.01
+            self.R.motor_board.motors[0].power = speed
+            self.R.motor_board.motors[1].power = -speed
             self.R.sleep(0.5)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
             if abs(markers[0].spherical.rot_y) < minAngle:
                 minAngle = abs(markers[0].spherical.rot_y)
             markers = self.R.camera.see()
-        self.R.motor_board.motors[0].power = 0.01
-        self.R.motor_board.motors[1].power = -0.01
+            markers = [marker for marker in markers if marker.id > 27]
+        self.R.motor_board.motors[0].power = -speed
+        self.R.motor_board.motors[1].power = speed
         self.R.sleep(0.5)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
