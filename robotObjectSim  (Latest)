@@ -388,6 +388,23 @@ class robot:
                 self.R.sleep(0.5)
                 self.R.motor_board.motors[0].power = 0
                 self.R.motor_board.motors[1].power = 0
+    
+    
+    #in case we are stuck or cant see anything: drives back and turns roughly 180 degrees
+    def escape(self):
+        #drive back
+        self.R.motor_board.motors[0].power = -1
+        self.R.motor_board.motors[1].power = -1
+        self.R.sleep(0.1)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+
+        #turn 180 degrees
+        self.R.motor_board.motors[0].power = 0.5
+        self.R.motor_board.motors[1].power = -0.5
+        self.R.sleep(0.5)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
 
     #method to run at start of code to find out what corner the robot is in
     #ends with robot turning roughly 90 degrees left into enermy corner (unless escape method is somehow done)
@@ -396,18 +413,21 @@ class robot:
         count = 0
         breakFlag = False
         whileFlag = True
-
+        
+        #turns around the robot by roughly 180 degrees to see the wall markers behind it
         self.R.motor_board.motors[0].power = 0.5
         self.R.motor_board.motors[1].power = -0.5
         self.R.sleep(0.5)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
+        
 
-
+        #while loop until a target marker has been found
         while whileFlag:
             markers = self.R.camera.see_ids()
             if self.seeWallMarkers(markers):
-
+                
+                #sees what corner the wall markers it is seeing is in
                 for corner in self.wallMarkers:
                     for marker in corner:
                         if marker in markers:
@@ -432,9 +452,12 @@ class robot:
         self.R.sleep(0.25)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
+    
+    
+        
 
     #input of target refers to which corner's marker you are trying to find: "home", "adjacent", "opposite", "end"
-    #output of True if robot is facing home corner
+    #output of True if robot is facing home corner and False if the robot is not
     def facingCorner(self, target):
 
         self.markerToFace = None
@@ -452,20 +475,27 @@ class robot:
         else:
             print("INVALID INPUT for facingHome method")
             return None
-
+        
+        #modulus wrap around to deal with the home corenr being varied
         if self.home + n >= (len(self.wallMarkers)):
             corner = (self.home + n) % (len(self.wallMarkers))
         else:
             corner = self.home + n
-
+        
+        #list of the wall markers we would want to face towards
         wallMarkersWeWant = self.wallMarkers[corner]
-
+        
+        #while loop until a target marker has been found
         while whileFlag:
             markers = self.R.camera.see_ids()
             if self.seeWallMarkers(markers):
-
+                
+                #checks whether the markers we are looking for are within the vision of the robot
                 for marker in markers:
                     if marker in wallMarkersWeWant:
+                    
+                    #attribute is updated to the marker that the robot is seeing and within the wall makrers we are targetting for
+                    #this attribute can be used to identify which marker the robot needs to turn to
                         self.markerToFace = marker
                         return True
                 
@@ -473,21 +503,7 @@ class robot:
 
             else:
                 self.escape()
-
-    def escape(self):
-        #drive back
-        self.R.motor_board.motors[0].power = -1
-        self.R.motor_board.motors[1].power = -1
-        self.R.sleep(0.1)
-        self.R.motor_board.motors[0].power = 0
-        self.R.motor_board.motors[1].power = 0
-
-        #turn 180 degrees
-        self.R.motor_board.motors[0].power = 0.5
-        self.R.motor_board.motors[1].power = -0.5
-        self.R.sleep(0.5)
-        self.R.motor_board.motors[0].power = 0
-        self.R.motor_board.motors[1].power = 0
+    
     
     
     #Will be used to see if robot is seeing wall Markers (only the ones we care about)
