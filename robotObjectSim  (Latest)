@@ -431,7 +431,7 @@ class robot:
                 for corner in self.wallMarkers:
                     for marker in corner:
                         if marker in markers:
-                            cornerNum = count
+                            self.cornerNum = count
                             breakFlag = True
                             break
 
