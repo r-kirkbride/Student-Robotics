@@ -36,7 +36,7 @@ class robot:
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
     
-    def checkCollisons(self):
+    def checkCollisions(self):
         collided = False
         if (self.R.ruggeduino.pins[A0].analogue_read() < 0.5 or self.R.ruggeduino.pins[A0].analogue_read() < 0.5) and ((self.R.ruggeduino.pins[A4].analogue_read() > 0) and (self.R.ruggeduino.pins[A4].analogue_read() < 0.17)):
             collided = True
@@ -201,7 +201,7 @@ class robot:
             if marker.id == marker_id:
                 usedMarker = marker
         #adds 5cm buffer between robot and wall
-        while usedMarker.distance > 50 and not self.checkCollisons() :
+        while usedMarker.distance > 50 and not self.checkCollisions() :
             print(self.R.ruggeduino.pins[A0].analogue_read())
             self.R.motor_board.motors[0].power = 0.5
             self.R.motor_board.motors[1].power = 0.5
