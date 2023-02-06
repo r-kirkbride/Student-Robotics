@@ -6,11 +6,7 @@
 #define FW_VER 1
 
 //KEGS SR additions begin
-int motors[2] = {0,0};
-int currentL;
-int currentR;
-int previousL;
-int previousR;
+volatile long motors[2] = {0,0};
 //KEGS SR additions end
 
 void setup() {
@@ -20,8 +16,8 @@ void setup() {
   pinMode(2, INPUT_PULLUP);
   pinMode(3, INPUT_PULLUP);
   pinMode(5, INPUT_PULLUP);
-  previousL = digitalRead(2);
-  previousR = digitalRead(3);
+  attachInterrupt(digitalPinToInterrupt(2), updateEncoderLeft, RISING);
+  attachInterrupt(digitalPinToInterrupt(3), updateEncoderRight, RISING);
   //KEGS SR additions end
 }
 
@@ -61,41 +57,23 @@ void command_mode(int mode) {
 
 //KEGS SR additions begin
 void command_rotation_read(int motor) {
+  noInterrupts();
   Serial.print(motors[motor]);
+  interrupts();
 }
 
 void command_rotation_reset() {
+  noInterrupts();
   motors[0] = 0;
   motors[1] = 0;
+  interrupts();
 }
 
 //KEGS SR additions end
 
 void loop() {
   // Fetch all commands that are in the buffer
-  currentL = digitalRead(2);
-  currentR = digitalRead(3);
-  if ((currentL == 1) && (previousL == 0)){
-    motors[0] ++;
-  }
-  if ((currentR == 1) && (previousR == 0)){
-    motors[1] ++;
-  }
-  previousL = currentL;
-  previousR = currentR;
-
   while (Serial.available()) {
-    currentL = digitalRead(2);
-    currentR = digitalRead(3);
-    if ((currentL == 1) && (previousL == 0)){
-      motors[0] ++;
-    }
-    if ((currentR == 1) && (previousR == 0)){
-      motors[1] ++;
-    }
-    previousL = currentL;
-    previousR = currentR;
-  
     int selected_command = Serial.read();
     // Do something different based on what we got:
     switch (selected_command) {
@@ -143,3 +121,17 @@ void loop() {
     Serial.print("\n");
   }
 }
+
+//KEGS SR additions start
+void updateEncoderLeft()
+{
+  // Increment value for each pulse from encoder
+  motors[0]++;
+}
+
+void updateEncoderRight()
+{
+  // Increment value for each pulse from encoder
+  motors[1]++;
+}
+//KEGS SR additions end
