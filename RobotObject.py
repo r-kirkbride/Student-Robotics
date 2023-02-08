@@ -53,6 +53,13 @@ class robot:
             time.sleep(0.005)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0 
+    
+    def drive(self):
+        self.R.motor_board.motors[0].power = 0.5
+        self.R.motor_board.motors[1].power = 0.5
+        time.sleep(0.1)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
 
     def faceDirection(self, direc, speed=0.5):
         
@@ -176,11 +183,23 @@ class robot:
     def goToMarker(self, marker_id, speed=0.5):
         self.faceMarker(marker_id)
         markers = self.R.camera.see()
+        usedMarker = 9340
         for marker in markers:
             if marker.id == marker_id:
                 usedMarker = marker
-        #adds 5cm buffer between robot and wall
-        self.moveDist(usedMarker.distance-50, speed)
+        if usedMarker == 9340:
+            return "Marker not seen"
+        #adds 20cm buffer between robot and wall
+        counter = 0 
+        while usedMarker.distance > 20:
+            self.drive()
+            if counter == 4:
+                markers = self.R.camera.see()
+                if usedMarker in markers:
+                    if abs(usedMarker.spherical.rot_y) > 0.5:
+                        self.faceMarker(marker_id)
+                    counter = 0 
+            counter+=1
     
     #drives to marker until close enough
     def driveToMarker(self):
