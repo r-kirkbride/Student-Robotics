@@ -32,7 +32,7 @@ class robot:
     def moveDist(self, dist, speed=0.5):
         
         #speed defaults to 0.5 so it doesn't need to be passed
-        rotDist = 100 * math.pi #circumference of the wheel
+        rotDist = 100 * math.pi #circumference of the wheel in mm
         degrees = dist/(rotDist * 360) #number of degrees to rotate
         self.R.ruggeduino.command("s") #reset motor encoders
         self.R.motor_board.motors[0].power = speed
