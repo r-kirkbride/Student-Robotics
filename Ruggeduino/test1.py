@@ -3,6 +3,8 @@ from sr.robot3 import *
 
 R = Robot()
 ruggeduino = R.ruggeduino
+
+ruggeduino.command("s")
 while True:
     time.sleep(1)
     left = ruggeduino.command("x")
