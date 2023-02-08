@@ -3,7 +3,7 @@ import time
 from sr.robot3 import *
 
 R = Robot()
-
+R.ruggeduino.command("s")
 # Distance in millimetres, -1 <= speed <= 1
 def moveDist(dist, speed):
     rotDist = 100 * math.pi

@@ -12,33 +12,44 @@ class robot:
         
         markers = self.R.camera.see_ids()
         
+        self.R.ruggeduino.command("s") #reset motor encoders
+        
         #determines the starting corner of the robot 
         ##This because a each of the following markers IDs: 0, 7, 14, 21 is in each of the 4 corners
-        if 14 in markers:
+        """if 14 in markers:
             self.starting_corner = 1
         elif 7 in markers:
             self.starting_corner = 0
         elif 0 in markers:
             self.starting_corner = 3
         elif 21 in markers:
-            self.starting_corner = 2
+            self.starting_corner = 2"""
         
         #Deploys arms to the correct position upon initialising the robot 
-        self.R.servo_board.servos[1].position = 0.8
-        self.R.servo_board.servos[2].position = -0.8
+        """self.R.servo_board.servos[1].position = 0.8
+        self.R.servo_board.servos[2].position = -0.8"""
 
     def moveDist(self, dist, speed=0.5):
         
         #speed defaults to 0.5 so it doesn't need to be passed
-        rotDist = 100 * math.pi
-        self.R.ruggeduino.command("s")
+        rotDist = 100 * math.pi #circumference of the wheel
+        degrees = dist/(rotDist * 360) #number of degrees to rotate
+        self.R.ruggeduino.command("s") #reset motor encoders
         self.R.motor_board.motors[0].power = speed
         self.R.motor_board.motors[1].power = speed
         encLeft = self.R.ruggeduino.command("x")
         encRight = self.R.ruggeduino.command("y")
-        while (encLeft + encRight)/2 < (dist/rotDist)*360:
+        while (encLeft + encRight)/2 < degrees:
             encLeft = self.R.ruggeduino.command("x")
             encRight = self.R.ruggeduino.command("y")
+            time.sleep(0.005)
+        while encLeft > degrees and encRight < degrees:
+            self.R.motor_board.motors[0].power = speed
+            self.R.motor_board.motors[1].power = -speed
+            time.sleep(0.005)
+        while encLeft < degrees and encRight > degrees:
+            self.R.motor_board.motors[0].power = -speed
+            self.R.motor_board.motors[1].power = speed
             time.sleep(0.005)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0 
