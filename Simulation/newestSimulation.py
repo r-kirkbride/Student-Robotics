@@ -84,11 +84,11 @@ class robot:
         if direc == "north":
             usedMarkers = self.wallThings[self.cornerNum % 4]
         elif direc == "south":
-            usedMarkers = self.wallThings[self.cornerNum % 4]
+            usedMarkers = self.wallThings[(self.cornerNum+2) % 4]
         elif direc == "east":
-            usedMarkers = self.wallThings[self.cornerNum % 4]
+            usedMarkers = self.wallThings[(self.cornerNum+1) % 4]
         elif direc == "west":
-            usedMarkers = self.wallThings[self.cornerNum % 4]
+            usedMarkers = self.wallThings[(self.cornerNum+3) % 4]
         print(usedMarkers)
         markers = self.R.camera.see_ids()
         print(markers)
@@ -119,7 +119,7 @@ class robot:
             self.faceDirection(direc)
         else:
             answer = abs(abs(markers[0].orientation.rot_y) - abs(markers[0].spherical.rot_y))
-            while answer > 0.025:
+            while answer > 0.1:
                 self.R.motor_board.motors[0].power = 0.05
                 self.R.motor_board.motors[1].power = -0.05
                 self.R.sleep(0.1)
@@ -127,11 +127,21 @@ class robot:
                 self.R.motor_board.motors[1].power = 0
                 markers = self.R.camera.see()
                 markers = [marker for marker in markers if marker.id in usedMarkers]
+            
+
                 if len(markers)==0:
                     break
-                print(abs(markers[0].orientation.rot_y), abs(markers[0].spherical.rot_y))
                 answer = abs(abs(markers[0].orientation.rot_y) - abs(markers[0].spherical.rot_y))
-                print(answer)
+                print(abs(markers[0].orientation.rot_y), abs(markers[0].spherical.rot_y))
+            
+            self.R.motor_board.motors[0].power = 0.05
+            self.R.motor_board.motors[1].power = -0.05
+            self.R.sleep(0.1)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+      
+      
+            
     #functions for interacting with brainboard LEDs 
     def turnOnLED (self, name="A", colour="cyan"):
         if name == "A" and colour == "cyan":
@@ -390,7 +400,6 @@ class robot:
                     temp = fullMarkers[0]
                     fullMarkers[0] = markers[0]
                     fullMarkers.append(temp)
-        print(fullMarkers)
         return fullMarkers
             
 
@@ -563,11 +572,7 @@ class robot:
                 self.move()
 
 
-        self.R.motor_board.motors[0].power = 0.5
-        self.R.motor_board.motors[1].power = -0.5
-        self.R.sleep(0.2)
-        self.R.motor_board.motors[0].power = 0
-        self.R.motor_board.motors[1].power = 0
+        self.faceDirection("north")
         
         
     
@@ -667,7 +672,12 @@ class robot:
         return stop
                 
 
-
+    def right(self):
+        self.R.motor_board.motors[0].power = 0.5
+        self.R.motor_board.motors[1].power = -0.5
+        self.R.sleep(0.25)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
 
 
     def testMethod(self):
@@ -731,7 +741,21 @@ class robot:
         #self.R.motor_board.motors[1].power = 0
     
 
-    def main(self):
+    #def main(self):
+        #self.knowHome()
+        #while True:
+            #pass
+    
+    def ninety(self):
+        self.R.motor_board.motors[0].power = -0.5
+        self.R.motor_board.motors[1].power = 0.5
+        self.R.sleep(0.27)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+
+
+    def final(self):
         self.knowHome()
-        while True:
-            self.testMethod()
+
+r = robot()
+r.final()
