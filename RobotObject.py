@@ -57,7 +57,10 @@ class robot:
     def moveDist(self, dist, speed=0.5):
         rotDist = 100 * math.pi
         degrees = (dist/rotDist)*360
-        leftSpeed, rightSpeed = speed, speed
+        if dist > 0:
+            leftSpeed, rightSpeed = speed, speed
+        else:
+            leftSpeed, rightSpeed = -speed, -speed
         self.R.ruggeduino.command("s")
         self.R.motor_board.motors[0].power = leftSpeed
         self.R.motor_board.motors[1].power = rightSpeed
@@ -70,6 +73,29 @@ class robot:
                 self.R.motor_board.motors[0].power = leftSpeed - 0.025
             elif encRight > encLeft:
                 self.R.motor_board.motors[1].power = rightSpeed - 0.025
+            time.sleep(0.05)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+
+    def rotateDeg(self, deg, speed=0.5):
+        rotDist = 100 * math.pi
+        degrees = (((deg/360)*400*math.pi)/rotDist)*360
+        if dist > 0:
+            leftSpeed, rightSpeed = speed, -speed
+        else:
+            leftSpeed, rightSpeed = speed, -speed
+        self.R.ruggeduino.command("s")
+        self.R.motor_board.motors[0].power = leftSpeed
+        self.R.motor_board.motors[1].power = rightSpeed
+        encLeft = self.R.ruggeduino.command("x")
+        encRight = self.R.ruggeduino.command("y")
+        while (encLeft + encRight)/2 < degrees:
+            encLeft = self.R.ruggeduino.command("x")
+            encRight = self.R.ruggeduino.command("y")
+            if encLeft > encRight:
+                self.R.motor_board.motors[0].power = leftSpeed - 0.025
+            elif encRight > encLeft:
+                self.R.motor_board.motors[1].power = rightSpeed + 0.025
             time.sleep(0.05)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
