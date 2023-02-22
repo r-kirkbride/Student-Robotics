@@ -12,10 +12,11 @@ class robot:
         
         markers = self.R.camera.see_ids()
 
-        corner0 = [25,26,27,0,1,2]
-        corner1 = [4,5,6,7,8,9]
-        corner2 = [11,12,13,14,15,16]
-        corner3 = [18,19,20,21,22,23]
+        corner0 = [24,25,26,27,0,1,2]
+        corner1 = [3,4,5,6,7,8,9]
+        corner2 = [10,11,12,13,14,15,16]
+        corner3 = [17,18,19,20,21,22,23]
+        self.middleMarkers = [3,10,17,24]
         self.cornerNum = 0
         self.wallMarkers = [corner0, corner1, corner2, corner3]
         self.wallThings = [[0,1,2,3,4,5,6], [7,8,9,10,11,12,13], [14,15,16,17,18,19,20], [21,22,23,24,25,26,27]]
@@ -79,7 +80,7 @@ class robot:
         #uses a 2D array to determine wall markers in each direction relative to a birds eye perspective 
         
         #input sanitation 
-        
+        self.direction = direc
         #chooses the used markers based on input given
         if direc == "north":
             usedMarkers = self.wallThings[self.cornerNum % 4]
@@ -89,56 +90,66 @@ class robot:
             usedMarkers = self.wallThings[(self.cornerNum+1) % 4]
         elif direc == "west":
             usedMarkers = self.wallThings[(self.cornerNum+3) % 4]
-        print(usedMarkers)
+        
         markers = self.R.camera.see_ids()
-        print(markers)
+        
         #creates an array of markers that the camera both sees and are on the correct wall relative to the robot 
         intersection = [marker for marker in markers if marker in usedMarkers]
-        print(intersection)
+        
         #rotates the robot until the above task is complete 
         while len(intersection) < 1:
-            self.R.motor_board.motors[0].power = 0.5
-            self.R.motor_board.motors[1].power = -0.5
+            self.R.motor_board.motors[0].power = speed
+            self.R.motor_board.motors[1].power = -speed
             self.R.sleep(0.1)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
             markers = self.R.camera.see_ids()
             intersection = [marker for marker in markers if marker in usedMarkers]
-            
         
-        print(usedMarkers)
+        
+        
+    
         markers = self.R.camera.see()
-        print(intersection)
+        
        
         #creates a second list of full markers where only the markers that have been seen and are located on the correct wall are used 
         markers = [marker for marker in markers if marker.id in usedMarkers]
-        print(markers)
+        
         
         #checks for the angle to the wall within a 5 degree margin of error and turns to face that wall accordingly 
         if len(markers) == 0:
             self.faceDirection(direc)
         else:
             answer = abs(abs(markers[0].orientation.rot_y) - abs(markers[0].spherical.rot_y))
-            while answer > 0.1:
-                self.R.motor_board.motors[0].power = 0.05
-                self.R.motor_board.motors[1].power = -0.05
+            answer1=999999999
+            tututu = abs(markers[0].orientation.rot_y)
+            turned = False
+            while answer > 0.07:
+                self.R.motor_board.motors[0].power = speed/10
+                self.R.motor_board.motors[1].power = -speed/10
                 self.R.sleep(0.1)
                 self.R.motor_board.motors[0].power = 0
                 self.R.motor_board.motors[1].power = 0
                 markers = self.R.camera.see()
                 markers = [marker for marker in markers if marker.id in usedMarkers]
-            
-
+                if tututu > answer1 and not turned :
+                    speed = -speed
+                    turned = True
+                answer1 = tututu
+                
                 if len(markers)==0:
                     break
+                tututu = abs(abs(markers[0].orientation.rot_y)) 
                 answer = abs(abs(markers[0].orientation.rot_y) - abs(markers[0].spherical.rot_y))
-                print(abs(markers[0].orientation.rot_y), abs(markers[0].spherical.rot_y))
+                
             
             self.R.motor_board.motors[0].power = 0.05
             self.R.motor_board.motors[1].power = -0.05
             self.R.sleep(0.1)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
+        
+        self.R.sleep(1)
       
       
             
@@ -170,8 +181,8 @@ class robot:
         pass
     
     def faceMarker(self, marker_id, speed=0.5):
+        
         markers = self.R.camera.see_ids()
-        print(markers) 
         #the robot will stop roating as soon it sees the correct marker in its peripheral 
         while marker_id not in markers:
             self.R.motor_board.motors[0].power = 0.5
@@ -188,7 +199,6 @@ class robot:
                 dist = marker.distance
         dist_diff = 1
         dist2=0
-        dist = 9999999999
         while dist_diff > 0:
             
             self.R.motor_board.motors[0].power = 0.2
@@ -197,11 +207,14 @@ class robot:
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
             markers = self.R.camera.see()
-            for marker in markers:
-                if marker.id == marker_id:
-                    dist2 = marker.distance
-            dist_diff = dist - dist2 
-            dist = dist2
+            if len(markers) > 0:
+                for marker in markers:
+                    if marker.id == marker_id:
+                        dist2 = marker.distance
+                dist_diff = dist - dist2 
+                dist = dist2
+            else:
+                break 
 
         self.R.motor_board.motors[0].power = -0.2
         self.R.motor_board.motors[1].power = 0.2
@@ -279,7 +292,7 @@ class robot:
         self.R.motor_board.motors[1].power = 0
 
     #method that checks distance of obstacle to robot
-    def checkMarker(self, toStop=0.5):
+    def checkMarker(self, toStop=0.6):
 
         going = True
 
@@ -330,22 +343,37 @@ class robot:
         markers = self.R.camera.see()
         if len(markers) > 0:
             idx = 0 
-            minDist = 9000000000 
+            minDist = 9000000000
+
             for i in range(counter):
-                self.R.motor_board.motors[0].power = 0.08
-                self.R.motor_board.motors[1].power = -0.08
+                self.R.motor_board.motors[0].power = -0.08
+                self.R.motor_board.motors[1].power = 0.08
                 self.R.sleep(0.5)
                 self.R.motor_board.motors[0].power = 0
                 self.R.motor_board.motors[1].power = 0
-                if markers[0].distance < minDist and markers[0].id > 27:
-                    idx = i 
-                #for marker in markers:
-                    #if marker.id > 27:
-                        #if marker.distance < minDist:
-                            #print(marker.distance, marker.id)
-                            #idx = i 
-                markers = self.R.camera.see()
-            for i in range(counter-idx):
+            for i in range(2*counter):
+                if len(markers) > 0:
+                    self.R.motor_board.motors[0].power = 0.08
+                    self.R.motor_board.motors[1].power = -0.08
+                    self.R.sleep(0.5)
+                    self.R.motor_board.motors[0].power = 0
+                    self.R.motor_board.motors[1].power = 0
+                    #intersection1 = [marker for marker in markers if marker.id<28]
+                    #intersection = [marker for marker in intersection1 if marker not in self.wallMarkers[self.cornerNum %4]]
+                    #print(intersection)
+                    if markers[0].distance < minDist and markers[0].id > 27 :
+                        idx = i
+                        minDist = markers[0].distance
+                        print(idx) 
+                    #for marker in markers:
+                        #if marker.id > 27:
+                            #if marker.distance < minDist:
+                                #print(marker.distance, marker.id)
+                                #idx = i 
+                    markers = self.R.camera.see()
+                else:
+                    self.faceClosestToken(counter+3)
+            for i in range((2*counter)-idx):
                 self.R.motor_board.motors[0].power = -0.08
                 self.R.motor_board.motors[1].power = 0.08
                 self.R.sleep(0.5)
@@ -356,27 +384,30 @@ class robot:
                 self.faceClosestToken(counter+1)
             markers = self.R.camera.see()
             markers = [marker for marker in markers if marker.id > 27]
-            usedAngle = markers[0].spherical.rot_y
-            if usedAngle < 0:
-                speed = -0.01
-            else:
-                speed = 0.01 
-            minAngle = 999090909
-            while abs(markers[0].spherical.rot_y) <= minAngle:
-                self.R.motor_board.motors[0].power = speed
-                self.R.motor_board.motors[1].power = -speed
+            if len(markers) > 0:
+                usedAngle = markers[0].spherical.rot_y
+                if usedAngle < 0:
+                    speed = -0.01
+                else:
+                    speed = 0.01 
+                minAngle = 999090909
+                while abs(markers[0].spherical.rot_y) <= minAngle:
+                    self.R.motor_board.motors[0].power = speed
+                    self.R.motor_board.motors[1].power = -speed
+                    self.R.sleep(0.5)
+                    self.R.motor_board.motors[0].power = 0
+                    self.R.motor_board.motors[1].power = 0
+                    if abs(markers[0].spherical.rot_y) < minAngle:
+                        minAngle = abs(markers[0].spherical.rot_y)
+                    markers = self.R.camera.see()
+                    markers = [marker for marker in markers if marker.id > 27]
+                self.R.motor_board.motors[0].power = -speed
+                self.R.motor_board.motors[1].power = speed
                 self.R.sleep(0.5)
                 self.R.motor_board.motors[0].power = 0
                 self.R.motor_board.motors[1].power = 0
-                if abs(markers[0].spherical.rot_y) < minAngle:
-                    minAngle = abs(markers[0].spherical.rot_y)
-                markers = self.R.camera.see()
-                markers = [marker for marker in markers if marker.id > 27]
-            self.R.motor_board.motors[0].power = -speed
-            self.R.motor_board.motors[1].power = speed
-            self.R.sleep(0.5)
-            self.R.motor_board.motors[0].power = 0
-            self.R.motor_board.motors[1].power = 0
+            else:
+                self.faceClosestToken(counter+1)
 
 
     def getAngles(self):
@@ -394,15 +425,30 @@ class robot:
             self.R.motor_board.motors[1].power = 0
             markers = self.R.camera.see()
             markers = [marker for marker in markers if marker.id < 28]
+            for marker in markers:
+                if marker in fullMarkers:
+                    markers.remove(marker)
             fullMarkers += markers
-            if len(markers) > 0:
-                if markers[0].distance < fullMarkers[0].distance:
-                    temp = fullMarkers[0]
-                    fullMarkers[0] = markers[0]
-                    fullMarkers.append(temp)
-        return fullMarkers
-            
+        markers = sorted(fullMarkers, key=lambda x: x.distance)
+    
+        return markers
+    
+    def findClosestCornerMarker(self, n):
+        
+        fullMarkers = self.searchForWalls()
+        print((fullMarkers))
+        wanted = self.wallMarkers[(self.cornerNum + n ) % 4]
+        targetMarker = None
 
+        for i in range(len(fullMarkers)):
+            if fullMarkers[i].id in wanted:
+                targetMarker = fullMarkers[i]
+                break
+        return targetMarker
+
+
+
+    
 
     def getBox(self):
 
@@ -572,7 +618,7 @@ class robot:
                 self.move()
 
 
-        self.faceDirection("north")
+        
         
         
     
@@ -622,7 +668,8 @@ class robot:
     def seeWallMarkers(self, listy):
         count = 0
         for i in range(len(listy)):
-            if listy[i] == 99 or listy[i] == 3 or listy[i] == 10 or listy[i] == 17 or listy[i] == 24:
+            #if listy[i] == 99 or listy[i] == 3 or listy[i] == 10 or listy[i] == 17 or listy[i] == 24:
+            if listy[i] == 99:
                 count += 1
         
         if count < len(listy):
@@ -658,15 +705,34 @@ class robot:
             print("oh no")
             self.fetchTokens(corner+1)
 
+    def checkingMarker(self, markerToCheck):
+        stop = False
+        markers = self.R.camera.see()
+        print(f"marker to check: {markerToCheck}")
+        
+        for marker in markers:
+            print(marker.id)
+            print(marker.distance)
+
+            if marker.distance < 1000 and (marker.id == markerToCheck.id):
+                print(marker.id)
+                print(marker.distance)
+                stop = True
+        
+        return stop
+
 
     def checkSpecificMarker(self, markersToCheck):
         stop = False
         markers = self.R.camera.see()
         
         for marker in markers:
-            print(marker.id)
-            print(marker.distance)
-            if marker.distance < 1500 and (marker.id in markersToCheck):
+            #print(marker.id)
+            #print(marker.distance)
+
+            if marker.distance < 1000 and (marker.id in markersToCheck):
+                print(marker.id)
+                print(marker.distance)
                 stop = True
         
         return stop
@@ -698,8 +764,8 @@ class robot:
         self.R.motor_board.motors[1].power = 0
 
         if self.nearToken:
-            self.R.servo_board.servos[0].position = 0.8
-            self.R.servo_board.servos[1].position = 0.8
+            self.R.servo_board.servos[0].position = 0.9
+            self.R.servo_board.servos[1].position = 0.9
             self.R.sleep(0.3)
             self.escape()
         
@@ -746,16 +812,264 @@ class robot:
         #while True:
             #pass
     
-    def ninety(self):
-        self.R.motor_board.motors[0].power = -0.5
+    def ninety(self, direction = "east"):
+        if direction == "east":
+            self.R.motor_board.motors[0].power = 0.5
+            self.R.motor_board.motors[1].power = -0.5
+            self.R.sleep(0.27)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+        else:
+            self.R.motor_board.motors[0].power = -0.5
+            self.R.motor_board.motors[1].power = 0.5
+            self.R.sleep(0.27)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+        
+    def halfturn(self):
+            self.R.motor_board.motors[0].power = 0.5
+            self.R.motor_board.motors[1].power = -0.5
+            self.R.sleep(0.52)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+
+    def spinNface(self):
+        closestMarker = None
+        wallMarkers = self.searchForWalls()
+        if len(wallMarkers) > 0:
+            closestMarker = wallMarkers[0].id
+            if closestMarker in self.wallThings[self.cornerNum % 4]:
+                self.faceDirection("north")
+            if closestMarker in self.wallThings[(self.cornerNum + 1) % 4]:
+                self.faceDirection("east")
+            if closestMarker in self.wallThings[(self.cornerNum + 2) % 4]:
+                self.faceDirection("south")
+            if closestMarker in self.wallThings[(self.cornerNum + 3) % 4]:
+                self.faceDirection("west")
+        
+        self.R.motor_board.motors[0].power = 0.4
+        self.R.motor_board.motors[1].power = 0.4
+        self.R.sleep(0.4)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+            
+        
+        return closestMarker
+        
+
+    def see(self):
+        markers = self.R.camera.see()
+        print(markers)
+
+        for marker in markers:
+            if marker.id < 28:
+                if marker.distance < 1000:
+                    return True
+        return False
+
+    def checkWeight(self):
+        self.R.servo_board.servos[2].position = 1
+        self.R.servo_board.servos[3].position = 1
+        weight1 = self.R.ruggeduino.pins[A6].analogue_read()
+        weight2 = self.R.ruggeduino.pins[A7].analogue_read()
+        self.R.sleep(0.1)
+        self.R.servo_board.servos[2].position = -1
+        self.R.servo_board.servos[3].position = -1
+        return weight1, weight2
+    
+    def fetch(self):
+        self.faceDirection("north")
+
+        targetMarker = self.findClosestCornerMarker(1)
+        if targetMarker != None:
+            self.faceMarker(targetMarker.id)
+        self.R.motor_board.motors[0].power = 0.15
+        self.R.motor_board.motors[1].power = -0.15
+        self.R.sleep(0.1)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+        
+        print(targetMarker.id)
+
+        for corner in self.wallMarkers:
+            if targetMarker.id in corner:
+                wantedMarkers = corner
+        
+        atMarker = False
+        count3 = 0
+
+        while atMarker == False:
+            self.R.motor_board.motors[0].power = 0.5
+            self.R.motor_board.motors[1].power = 0.5
+            self.R.sleep(0.1)
+
+
+            atMarker = self.checkSpecificMarker(wantedMarkers)
+            if atMarker == False:
+                count3 += 1
+            
+            if count3 > 40:
+                atMarker = True
+                print("stopped")
+        
+        self.ninety()
+        self.R.motor_board.motors[0].power = 0.5
         self.R.motor_board.motors[1].power = 0.5
-        self.R.sleep(0.27)
+        self.R.sleep(0.25)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+        
+        self.faceClosestToken(1)
+
+        noCollision = True
+        count2 = 0
+
+        while noCollision:
+            self.R.motor_board.motors[0].power = 0.8
+            self.R.motor_board.motors[1].power = 0.8
+            self.R.sleep(0.1)
+            noCollision = self.checkMarker()
+            if noCollision == True:
+                count2 += 1
+            
+            if count2 > 40:
+                noCollision = False
+                print("was stuck when in fetch stage")
+        
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
 
+        if self.nearToken:
+            self.R.servo_board.servos[0].position = 0.8
+            self.R.servo_board.servos[1].position = 0.8
+            self.R.sleep(0.3)
+            #print(self.checkWeight())
+        
+        self.R.sleep(0.5)
+    
+    def retrive(self):
+        marker = self.spinNface()
 
+        print(self.direction)
+
+
+        turn = None
+
+
+        if marker in self.wallMarkers[(self.cornerNum) % 4]:
+            self.repeat = 0
+            turn = 0
+
+        elif marker in self.wallMarkers[(self.cornerNum + 1) % 4]:
+            self.repeat = 0
+            if self.direction == "north":
+                turn = 3
+            elif self.direction == "east":
+                turn = 2
+            elif self.direction == "south":
+                turn = 1
+            elif self.direction == "west":
+                turn = 0
+
+        elif marker in self.wallMarkers[(self.cornerNum + 2) % 4]:
+            self.repeat = 1
+            if self.direction == "north":
+                turn = 0
+            elif self.direction == "east":
+                turn = 3
+            elif self.direction == "south":
+                turn = 2
+            elif self.direction == "west":
+                turn = 1
+
+        elif marker in self.wallMarkers[(self.cornerNum + 3) % 4]:
+            self.repeat = 0
+            if self.direction == "north":
+                turn = 0
+            elif self.direction == "east":
+                turn = 3
+            elif self.direction == "south":
+                turn = 2
+            elif self.direction == "west":
+                turn = 1
+
+        print(turn)
+
+        if turn == 1:
+            self.ninety()
+            print("turned ninety (east)")
+        elif turn == 2:
+            self.halfturn()
+            print("turned 180")
+        if turn == 3:
+            self.ninety("west")
+            print("turned ninety (west)")
+                
+
+        
+        self.R.sleep(1)
+
+        
+
+        markerstoCheck = self.wallMarkers[self.cornerNum % 4]
+        atCorner = False
+        count = 0
+
+        while atCorner == False:
+            self.R.motor_board.motors[0].power = 1
+            self.R.motor_board.motors[1].power = 1
+            self.R.sleep(0.1)
+            atCorner = self.checkSpecificMarker(markerstoCheck)
+            if atCorner == False:
+                count += 1
+            
+            if count > 20:
+                atCorner = True
+                print("stopped")
+
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+
+        self.R.sleep(0.4)
+
+    
     def final(self):
         self.knowHome()
+
+        while True:
+            self.repeat = 1
+            self.fetch()
+
+            while self.repeat != 0:
+                self.retrive()
+                self.R.sleep(0.1)
+            
+            self.R.servo_board.servos[0].position = -1
+            self.R.servo_board.servos[1].position = -1
+
+            self.R.motor_board.motors[0].power = -0.5
+            self.R.motor_board.motors[1].power = -0.5
+            self.R.sleep(0.5)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+            
+            
+            #self.spinNface()
+            #edgeMarker = self.searchForWalls()[0].id
+            #while edgeMarker != (self.middleMarkers[self.cornerNum%4] or self.middleMarkers[(self.cornerNum + 1)%4]:
+             #   self.R.motor_board.motors[0].power = -0.5
+              #  self.R.motor_board.motors[1].power = -0.5
+               # self.R.sleep(1)
+                #self.R.motor_board.motors[0].power = 0
+              #  self.R.motor_board.motors[1].power = 0
+              #  edgeMarker = self.searchForWalls()[0].id
+            print("done")
+
+        
+
+
+
+
 
 r = robot()
 r.final()
