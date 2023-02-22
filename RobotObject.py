@@ -1,4 +1,3 @@
-
 from sr.robot3 import *
 import time
 import math
@@ -29,31 +28,78 @@ class robot:
         """self.R.servo_board.servos[1].position = 0.8
         self.R.servo_board.servos[2].position = -0.8"""
 
+##    def moveDist(self, dist, speed=0.5):
+##        
+##        #speed defaults to 0.5 so it doesn't need to be passed
+##        rotDist = 100 * math.pi #circumference of the wheel in mm
+##        degrees = (dist/rotDist) * 360 #number of degrees to rotate
+##        self.R.ruggeduino.command("s") #reset motor encoders
+##        self.R.motor_board.motors[0].power = speed
+##        self.R.motor_board.motors[1].power = speed
+##        encLeft = self.R.ruggeduino.command("x")
+##        encRight = self.R.ruggeduino.command("y")
+##        while (encLeft + encRight)/2 < degrees:
+##            encLeft = self.R.ruggeduino.command("x")
+##            encRight = self.R.ruggeduino.command("y")
+##            time.sleep(0.005)
+##        while encLeft > degrees and encRight < degrees:
+##            self.R.motor_board.motors[0].power = speed
+##            self.R.motor_board.motors[1].power = -speed
+##            time.sleep(0.005)
+##        while encLeft < degrees and encRight > degrees:
+##            self.R.motor_board.motors[0].power = -speed
+##            self.R.motor_board.motors[1].power = speed
+##            time.sleep(0.005)
+##        self.R.motor_board.motors[0].power = 0
+##        self.R.motor_board.motors[1].power = 0 
+
+    # Distance in millimetres, -1 <= speed <= 1
     def moveDist(self, dist, speed=0.5):
-        
-        #speed defaults to 0.5 so it doesn't need to be passed
-        rotDist = 100 * math.pi #circumference of the wheel in mm
-        degrees = dist/(rotDist * 360) #number of degrees to rotate
-        self.R.ruggeduino.command("s") #reset motor encoders
-        self.R.motor_board.motors[0].power = speed
-        self.R.motor_board.motors[1].power = speed
+        rotDist = 100 * math.pi
+        degrees = (dist/rotDist)*360
+        leftSpeed, rightSpeed = speed, speed
+        self.R.ruggeduino.command("s")
+        self.R.motor_board.motors[0].power = leftSpeed
+        self.R.motor_board.motors[1].power = rightSpeed
         encLeft = self.R.ruggeduino.command("x")
         encRight = self.R.ruggeduino.command("y")
         while (encLeft + encRight)/2 < degrees:
             encLeft = self.R.ruggeduino.command("x")
             encRight = self.R.ruggeduino.command("y")
-            time.sleep(0.005)
-        while encLeft > degrees and encRight < degrees:
-            self.R.motor_board.motors[0].power = speed
-            self.R.motor_board.motors[1].power = -speed
-            time.sleep(0.005)
-        while encLeft < degrees and encRight > degrees:
-            self.R.motor_board.motors[0].power = -speed
-            self.R.motor_board.motors[1].power = speed
-            time.sleep(0.005)
+            if encLeft > encRight:
+                self.R.motor_board.motors[0].power = leftSpeed - 0.025
+            elif encRight > encLeft:
+                self.R.motor_board.motors[1].power = rightSpeed - 0.025
+            time.sleep(0.05)
         self.R.motor_board.motors[0].power = 0
-        self.R.motor_board.motors[1].power = 0 
-    
+        self.R.motor_board.motors[1].power = 0
+        
+##    def moveRot(self, rot, speed=0.5):
+##        R.ruggeduino.command("s")
+##        R.motor_board.motors[0].power = speed
+##        R.motor_board.motors[1].power = speed
+##        encLeft = R.ruggeduino.command("x")
+##        encRight = R.ruggeduino.command("y")
+##        while (encLeft + encRight)/2 < rot*360:
+##            encLeft = R.ruggeduino.command("x")
+##            encRight = R.ruggeduino.command("y")
+##            time.sleep(0.005)
+##        R.motor_board.motors[0].power = 0
+##        R.motor_board.motors[1].power = 0
+##
+##    def moveDeg(self, deg, speed=0.5):
+##        R.ruggeduino.command("s")
+##        R.motor_board.motors[0].power = speed
+##        R.motor_board.motors[1].power = speed
+##        encLeft = R.ruggeduino.command("x")
+##        encRight = R.ruggeduino.command("y")
+##        while (encLeft + encRight)/2 < deg:
+##            encLeft = R.ruggeduino.command("x")
+##            encRight = R.ruggeduino.command("y")
+##            time.sleep(0.005)
+##        R.motor_board.motors[0].power = 0
+##        R.motor_board.motors[1].power = 0
+
     def drive(self):
         self.R.motor_board.motors[0].power = 0.5
         self.R.motor_board.motors[1].power = 0.5
