@@ -14,7 +14,7 @@ class robot:
         self.R.ruggeduino.command("s") #reset motor encoders
         
         #determines the starting corner of the robot 
-        ##This because a each of the following markers IDs: 0, 7, 14, 21 is in each of the 4 corners
+        #This because a each of the following markers IDs: 0, 7, 14, 21 is in each of the 4 corners
         """if 14 in markers:
             self.starting_corner = 1
         elif 7 in markers:
@@ -28,56 +28,61 @@ class robot:
         """self.R.servo_board.servos[1].position = 0.8
         self.R.servo_board.servos[2].position = -0.8"""
 
-##    def moveDist(self, dist, speed=0.5):
-##        
-##        #speed defaults to 0.5 so it doesn't need to be passed
-##        rotDist = 100 * math.pi #circumference of the wheel in mm
-##        degrees = (dist/rotDist) * 360 #number of degrees to rotate
-##        self.R.ruggeduino.command("s") #reset motor encoders
-##        self.R.motor_board.motors[0].power = speed
-##        self.R.motor_board.motors[1].power = speed
-##        encLeft = self.R.ruggeduino.command("x")
-##        encRight = self.R.ruggeduino.command("y")
-##        while (encLeft + encRight)/2 < degrees:
-##            encLeft = self.R.ruggeduino.command("x")
-##            encRight = self.R.ruggeduino.command("y")
-##            time.sleep(0.005)
-##        while encLeft > degrees and encRight < degrees:
-##            self.R.motor_board.motors[0].power = speed
-##            self.R.motor_board.motors[1].power = -speed
-##            time.sleep(0.005)
-##        while encLeft < degrees and encRight > degrees:
-##            self.R.motor_board.motors[0].power = -speed
-##            self.R.motor_board.motors[1].power = speed
-##            time.sleep(0.005)
-##        self.R.motor_board.motors[0].power = 0
-##        self.R.motor_board.motors[1].power = 0 
+    """def moveDist(self, dist, speed=0.5):
+        
+        #speed defaults to 0.5 so it doesn't need to be passed
+        rotDist = 100 * math.pi #circumference of the wheel in mm
+        degrees = (dist/rotDist) * 360 #number of degrees to rotate
+        self.R.ruggeduino.command("s") #reset motor encoders
+        self.R.motor_board.motors[0].power = speed
+        self.R.motor_board.motors[1].power = speed
+        encLeft = self.R.ruggeduino.command("x")
+        encRight = self.R.ruggeduino.command("y")
+        while (encLeft + encRight)/2 < degrees:
+            encLeft = self.R.ruggeduino.command("x")
+            encRight = self.R.ruggeduino.command("y")
+            time.sleep(0.005)
+        while encLeft > degrees and encRight < degrees:
+            self.R.motor_board.motors[0].power = speed
+            self.R.motor_board.motors[1].power = -speed
+            time.sleep(0.005)
+        while encLeft < degrees and encRight > degrees:
+            self.R.motor_board.motors[0].power = -speed
+            self.R.motor_board.motors[1].power = speed
+            time.sleep(0.005)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0""" 
 
     # Distance in millimetres, -1 <= speed <= 1
-    def moveDist(self, dist, speed=0.5):
-        rotDist = 100 * math.pi
-        degrees = (dist/rotDist)*360
-        if dist > 0:
-            leftSpeed, rightSpeed = speed, speed
-        else:
-            leftSpeed, rightSpeed = -speed, -speed
+    def moveDist(self, dist, speed=0.5,braking = False):
+        CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
+        degrees = (dist/CIRCUMFERENCE)*360 #number of degrees to rotate
+        reverseMultiplier = speed/abs(speed) #will be -1 if robot is going to reverse, otherwise 1
+        if dist < 0:
+            return self.moveDist(abs(dist),-speed)
         self.R.ruggeduino.command("s")
-        self.R.motor_board.motors[0].power = leftSpeed
-        self.R.motor_board.motors[1].power = rightSpeed
+        self.R.motor_board.motors[0].power = speed
+        self.R.motor_board.motors[1].power = speed
         encLeft = self.R.ruggeduino.command("x")
         encRight = self.R.ruggeduino.command("y")
         while (encLeft + encRight)/2 < degrees:
             encLeft = self.R.ruggeduino.command("x")
             encRight = self.R.ruggeduino.command("y")
             if encLeft > encRight:
-                self.R.motor_board.motors[0].power = leftSpeed - 0.025
+                self.R.motor_board.motors[0].power -= reverseMultiplier * 0.025
             elif encRight > encLeft:
-                self.R.motor_board.motors[1].power = rightSpeed - 0.025
+                self.R.motor_board.motors[1].power -= reverseMultiplier * 0.025
             time.sleep(0.05)
+        if braking:
+            self.R.motor_board.motors[0] = -1*reverseMultiplier
+            self.R.motor_board.motors[0] = -1*reverseMultiplier
+            while self.R.ruggeduino.command("x") != 0 and self.R.ruggeduino.command("y") != 0:
+                self.R.ruggeduino.command("s")
+                time.sleep(0.05)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
 
-    def rotateDeg(self, deg, speed=0.5):
+    """def rotateDeg(self, deg, speed=0.5):
         rotDist = 100 * math.pi
         degrees = (((deg/360)*400*math.pi)/rotDist)*360
         if dist > 0:
@@ -98,33 +103,33 @@ class robot:
                 self.R.motor_board.motors[1].power = rightSpeed + 0.025
             time.sleep(0.05)
         self.R.motor_board.motors[0].power = 0
-        self.R.motor_board.motors[1].power = 0
+        self.R.motor_board.motors[1].power = 0"""
         
-##    def moveRot(self, rot, speed=0.5):
-##        R.ruggeduino.command("s")
-##        R.motor_board.motors[0].power = speed
-##        R.motor_board.motors[1].power = speed
-##        encLeft = R.ruggeduino.command("x")
-##        encRight = R.ruggeduino.command("y")
-##        while (encLeft + encRight)/2 < rot*360:
-##            encLeft = R.ruggeduino.command("x")
-##            encRight = R.ruggeduino.command("y")
-##            time.sleep(0.005)
-##        R.motor_board.motors[0].power = 0
-##        R.motor_board.motors[1].power = 0
-##
-##    def moveDeg(self, deg, speed=0.5):
-##        R.ruggeduino.command("s")
-##        R.motor_board.motors[0].power = speed
-##        R.motor_board.motors[1].power = speed
-##        encLeft = R.ruggeduino.command("x")
-##        encRight = R.ruggeduino.command("y")
-##        while (encLeft + encRight)/2 < deg:
-##            encLeft = R.ruggeduino.command("x")
-##            encRight = R.ruggeduino.command("y")
-##            time.sleep(0.005)
-##        R.motor_board.motors[0].power = 0
-##        R.motor_board.motors[1].power = 0
+    """def moveRot(self, rot, speed=0.5):
+        R.ruggeduino.command("s")
+        R.motor_board.motors[0].power = speed
+        R.motor_board.motors[1].power = speed
+        encLeft = R.ruggeduino.command("x")
+        encRight = R.ruggeduino.command("y")
+        while (encLeft + encRight)/2 < rot*360:
+            encLeft = R.ruggeduino.command("x")
+            encRight = R.ruggeduino.command("y")
+            time.sleep(0.005)
+        R.motor_board.motors[0].power = 0
+        R.motor_board.motors[1].power = 0
+
+    def moveDeg(self, deg, speed=0.5):
+        R.ruggeduino.command("s")
+        R.motor_board.motors[0].power = speed
+        R.motor_board.motors[1].power = speed
+        encLeft = R.ruggeduino.command("x")
+        encRight = R.ruggeduino.command("y")
+        while (encLeft + encRight)/2 < deg:
+            encLeft = R.ruggeduino.command("x")
+            encRight = R.ruggeduino.command("y")
+            time.sleep(0.005)
+        R.motor_board.motors[0].power = 0
+        R.motor_board.motors[1].power = 0"""
 
     def drive(self):
         self.R.motor_board.motors[0].power = 0.5
@@ -202,11 +207,11 @@ class robot:
             self.R.kch.leds[UserLED.C] = Colour.RED
         
     def turnOffLED (self, name="A"):
-        if name == "A" and colour == "cyan":
+        if name == "A":
             self.R.kch.leds[UserLED.A] = Colour.OFF
-        if name == "B" and colour == "cyan":
+        if name == "B":
             self.R.kch.leds[UserLED.B] = Colour.OFF
-        if name == "C" and colour == "cyan":
+        if name == "C":
             self.R.kch.leds[UserLED.C] = Colour.OFF
     
     #to be added for a rotation function
