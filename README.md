@@ -18,8 +18,12 @@ R has one attribute which is its starting corner which it figures out when the c
 
 Methods to use:
 
-R.moveDist(distance, speed=0.5)
+R.moveDist(distance, speed=0.5, braking = Flase)
 
+#Can take 3 arguments:
+- dist - required - distance to move (can be negative to reverse).
+- speed - defaults to 0.5 - maximum speed to run the motors at (should always be positive, but can be negative).
+- braking - defaults to False - determines whether the motors are braked or coasted.
 takes two arguments, first distance which is required in mm then speed (speed does not need to be passed and defaults to 0.5) which is from 1 to -1 and moves the robot that distance in the direction it is facing 
 
 R.turnOnLED(name="A", colour="cyan")
