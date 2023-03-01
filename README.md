@@ -18,9 +18,9 @@ R has one attribute which is its starting corner which it figures out when the c
 
 ## Methods to use:
 
-R.moveDist(distance, speed=0.5, braking = Flase)
+### R.moveDist(distance, speed=0.5, braking = Flase)
 
-### Can take 3 arguments:
+Can take 3 arguments:
 - dist - required - distance to move (can be negative to reverse).
 - speed - defaults to 0.5 - maximum speed to run the motors at (should always be positive, but can be negative).
 - braking - defaults to False - determines whether the motors are braked or coasted.
