@@ -55,24 +55,28 @@ class robot:
 
     # Distance in millimetres, -1 <= speed <= 1
     def moveDist(self, dist, speed=0.5,braking = False):
-        dist *= 1000
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
+        TOLERANCE = 5 #tolerance of difference before it compensates
         degrees = (dist/CIRCUMFERENCE)*360 #number of degrees to rotate
         reverseMultiplier = speed/abs(speed) #will be -1 if robot is going to reverse, otherwise 1
         if dist < 0:
-            return self.moveDist(abs(dist),-speed)
+            return self.moveDist(abs(dist),-speed,braking)
         self.R.ruggeduino.command("s")
         self.R.motor_board.motors[0].power = speed
         self.R.motor_board.motors[1].power = speed
         encLeft = int(self.R.ruggeduino.command("x"))
         encRight = int(self.R.ruggeduino.command("y"))
         while (encLeft + encRight)/2 < degrees:
+            print(f"L:{encLeft}\tR:{encRight}")
             encLeft = int(self.R.ruggeduino.command("x"))
             encRight = int(self.R.ruggeduino.command("y"))
-            if encLeft > encRight:
-                self.R.motor_board.motors[0].power -= reverseMultiplier * 0.025
-            elif encRight > encLeft:
-                self.R.motor_board.motors[1].power -= reverseMultiplier * 0.025
+            if encLeft > encRight + TOLERANCE:
+                self.R.motor_board.motors[0].power -= reverseMultiplier * 0.005
+            elif encRight > encLeft + TOLERANCE:
+                self.R.motor_board.motors[1].power -= reverseMultiplier * 0.005
+            else:
+                self.R.motor_board.motors[0].power = speed
+                self.R.motor_board.motors[1].power = speed
             time.sleep(0.05)
         if braking:
             self.R.motor_board.motors[0] = -1*reverseMultiplier
