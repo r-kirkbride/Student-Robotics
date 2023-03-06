@@ -225,9 +225,10 @@ class robot:
         while marker_id not in markers:
             self.R.motor_board.motors[0].power = speed
             self.R.motor_board.motors[1].power = -speed
-            time.sleep(0.1)
+            time.sleep(0.4)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
+            time.sleep(0.2)
             markers = self.R.camera.see_ids()
 
         #sets up the initial distance as it compares the distance to the marker to previous distances  
@@ -241,9 +242,10 @@ class robot:
             
             self.R.motor_board.motors[0].power = 0.2
             self.R.motor_board.motors[1].power = -0.2
-            time.sleep(0.1)
+            time.sleep(0.4)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
+            time.sleep(0.4)
             markers = self.R.camera.see()
             for marker in markers:
                 if marker.id == marker_id:
@@ -319,3 +321,7 @@ class robot:
             going = False
         
         return going
+    def setPos(self):
+        self.R.servo_board.servos[0].position=0
+        time.sleep(0.2)
+        self.R.servo_board.servos[2].position=0
