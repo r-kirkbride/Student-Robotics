@@ -55,6 +55,7 @@ class robot:
 
     # Distance in millimetres, -1 <= speed <= 1
     def moveDist(self, dist, speed=0.5,braking = False):
+        dist *= 1000
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
         degrees = (dist/CIRCUMFERENCE)*360 #number of degrees to rotate
         reverseMultiplier = speed/abs(speed) #will be -1 if robot is going to reverse, otherwise 1
