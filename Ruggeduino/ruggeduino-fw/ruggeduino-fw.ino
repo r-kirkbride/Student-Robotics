@@ -110,6 +110,10 @@ void loop() {
         command_rotation_read(1);
         break;
       case 's':
+        pinMode(4, INPUT_PULLUP);
+        pinMode(2, INPUT_PULLUP);
+        pinMode(3, INPUT_PULLUP);
+        pinMode(5, INPUT_PULLUP);
         command_rotation_reset();
         break;
       //KEGS SR additions end
