@@ -55,31 +55,36 @@ class robot:
 
     # Distance in millimetres, -1 <= speed <= 1
     def moveDist(self, dist, speed=0.5,braking = False):
-        dist *= 1000
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
-        degrees = (dist/CIRCUMFERENCE)*360 #number of degrees to rotate
+        TOLERANCE = 5 #tolerance of difference before it compensates
+        degreesPerRot = 80
+        degrees = (dist/CIRCUMFERENCE)*degreesPerRot #number of degrees to rotate
         reverseMultiplier = speed/abs(speed) #will be -1 if robot is going to reverse, otherwise 1
         if dist < 0:
-            return self.moveDist(abs(dist),-speed)
+            return self.moveDist(abs(dist),-speed,braking)
         self.R.ruggeduino.command("s")
         self.R.motor_board.motors[0].power = speed
         self.R.motor_board.motors[1].power = speed
         encLeft = int(self.R.ruggeduino.command("x"))
         encRight = int(self.R.ruggeduino.command("y"))
         while (encLeft + encRight)/2 < degrees:
+            #print(f"L:{encLeft}, {self.R.motor_board.motors[0].power}\tR:{encRight}, {self.R.motor_board.motors[1].power}")
             encLeft = int(self.R.ruggeduino.command("x"))
             encRight = int(self.R.ruggeduino.command("y"))
-            if encLeft > encRight:
-                self.R.motor_board.motors[0].power -= reverseMultiplier * 0.025
-            elif encRight > encLeft:
-                self.R.motor_board.motors[1].power -= reverseMultiplier * 0.025
+            if encLeft > encRight + TOLERANCE:
+                self.R.motor_board.motors[0].power -= reverseMultiplier * 0.005
+            elif encRight > encLeft + TOLERANCE:
+                self.R.motor_board.motors[1].power -= reverseMultiplier * 0.005
+            else:
+                self.R.motor_board.motors[0].power = speed
+                self.R.motor_board.motors[1].power = speed
             time.sleep(0.05)
         if braking:
-            self.R.motor_board.motors[0] = -1*reverseMultiplier
-            self.R.motor_board.motors[0] = -1*reverseMultiplier
-            while int(self.R.ruggeduino.command("x")) != 0 and int(self.R.ruggeduino.command("y")) != 0:
+            self.R.motor_board.motors[0].power = -1*reverseMultiplier
+            self.R.motor_board.motors[1].power = -1*reverseMultiplier
+            while int(self.R.ruggeduino.command("x")) > 5 and int(self.R.ruggeduino.command("y")) > 5:
                 self.R.ruggeduino.command("s")
-                time.sleep(0.05)
+                time.sleep(0.005)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
 
@@ -219,7 +224,7 @@ class robot:
     def rotate(self, degrees):
         pass
     
-     def faceMarker(self, marker_id, speed=0.5):
+    def faceMarker(self, marker_id, speed=0.5):
         markers = self.R.camera.see_ids()
         
         #the robot will stop roating as soon it sees the correct marker in its peripheral 
@@ -236,20 +241,13 @@ class robot:
         markers = self.R.camera.see()
         for marker in markers:
             if marker.id == marker_id:
-                usedMarker = marker
                 dist = marker.distance
         dist_diff = 1
-        if len(markers) > 0:
-                usedAngle = usedMarker.spherical.rot_y
-                if usedAngle < 0:
-                    speed = -0.2
-                else:
-                    speed = 0.2
         
         while dist_diff > 0:
             
-            self.R.motor_board.motors[0].power = speed
-            self.R.motor_board.motors[1].power = -speed
+            self.R.motor_board.motors[0].power = 0.2
+            self.R.motor_board.motors[1].power = -0.2
             time.sleep(0.4)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
@@ -258,21 +256,15 @@ class robot:
             for marker in markers:
                 if marker.id == marker_id:
                     dist2 = marker.distance
-                    dist_diff = dist - dist2 
-                    dist = dist2
+            dist_diff = dist - dist2 
+            dist = dist2
 
-            print(f"dist_diff: {dist_diff}")
-
-        self.R.motor_board.motors[0].power = -speed
-        self.R.motor_board.motors[1].power = speed
-        time.sleep(0.4)
+        self.R.motor_board.motors[0].power = -0.2
+        self.R.motor_board.motors[1].power = 0.2
+        time.sleep(0.1)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
-        time.sleep(0.4)
 
-        print("done")
-        
-        
     def goToMarker(self, marker_id, speed=0.5):
         self.faceMarker(marker_id)
         markers = self.R.camera.see()
@@ -335,12 +327,7 @@ class robot:
             going = False
         
         return going
-    
-    def setPos(self, pos):
+    def setPos(self):
+        self.R.servo_board.servos[0].position=0
         time.sleep(0.2)
-        self.R.servo_board.servos[0].position=pos
-        print("moved")
-        time.sleep(0.2)
-        self.R.servo_board.servos[2].position=-pos
-        print("moved2")
-        time.sleep(0.2)
+        self.R.servo_board.servos[2].position=0
