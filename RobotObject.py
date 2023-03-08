@@ -54,7 +54,7 @@ class robot:
         self.R.motor_board.motors[1].power = 0""" 
 
     # Distance in millimetres, -1 <= speed <= 1
-    def moveDist(self, dist, speed=0.5,braking = False):
+    def moveDist(self, dist, speed=0.5,braking = True):
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
         TOLERANCE = 5 #tolerance of difference before it compensates
         degreesPerRot = 80
