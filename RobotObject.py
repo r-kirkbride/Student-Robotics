@@ -264,6 +264,16 @@ class robot:
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
 
+    def openArms(self, pos):
+        self.R.servo_board.servos[0].position = -pos
+        time.sleep(0.5)
+        self.R.servo_board.servos[2].position = pos
+    
+    def closeArms(self, pos):
+        self.R.servo_board.servos[0].position = pos
+        time.sleep(0.5)
+        self.R.servo_board.servos[2].position = pos
+
     def goToMarker(self, marker_id, speed=0.5):
         self.faceMarker(marker_id)
         markers = self.R.camera.see()
