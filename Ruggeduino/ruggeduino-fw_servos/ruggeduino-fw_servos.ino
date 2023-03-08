@@ -5,6 +5,8 @@
 #define SERIAL_BAUD 115200
 
 #define FW_VER 1.1
+Servo leftServo;
+Servo rightServo;
 
 //KEGS SR additions begin
 volatile long motors[2] = {0,0};
@@ -15,8 +17,8 @@ void setup() {
   //KEGS SR additions begin
   leftServo.attach(8);
   rightServo.attach(10);
-  leftServo.pos(0);
-  rightServo.pos(0);
+  leftServo.write(0);
+  rightServo.write(0);
   pinMode(4, INPUT_PULLUP);
   pinMode(2, INPUT_PULLUP);
   pinMode(3, INPUT_PULLUP);
@@ -124,19 +126,19 @@ void loop() {
       case 'g': //reset servos
         leftServo.attach(8);
         rightServo.attach(10);
-        leftServo.pos(0);
-        rightServo.pos(0);
+        leftServo.write(0);
+        rightServo.write(0);
       case 'b': //close leftServo
-        leftServo.pos(0);
+        leftServo.write(0);
         break;
       case 'c': //close rightServo
-        rightServo.pos(0);
+        rightServo.write(0);
         break;
       case 'd': //open leftServo
-        leftServo.pos(180);
+        leftServo.write(180);
         break;
       case 'e': //open rightServo
-        rightServo.pos(180);
+        rightServo.write(180);
         break;
       //KEGS SR additions end
       default:
