@@ -219,7 +219,7 @@ class robot:
     def rotate(self, degrees):
         pass
     
-    def faceMarker(self, marker_id, speed=0.5):
+     def faceMarker(self, marker_id, speed=0.5):
         markers = self.R.camera.see_ids()
         
         #the robot will stop roating as soon it sees the correct marker in its peripheral 
@@ -236,13 +236,20 @@ class robot:
         markers = self.R.camera.see()
         for marker in markers:
             if marker.id == marker_id:
+                usedMarker = marker
                 dist = marker.distance
-        dist_diff = 909009009
+        dist_diff = 1
+        if len(markers) > 0:
+                usedAngle = usedMarker.spherical.rot_y
+                if usedAngle < 0:
+                    speed = -0.2
+                else:
+                    speed = 0.2
         
         while dist_diff > 0:
             
-            self.R.motor_board.motors[0].power = -0.2
-            self.R.motor_board.motors[1].power = 0.2
+            self.R.motor_board.motors[0].power = speed
+            self.R.motor_board.motors[1].power = -speed
             time.sleep(0.4)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
@@ -254,16 +261,18 @@ class robot:
                     dist_diff = dist - dist2 
                     dist = dist2
 
-                    print(f"dist_diff: {dist_diff}")
+            print(f"dist_diff: {dist_diff}")
 
-        self.R.motor_board.motors[0].power = 0.2
-        self.R.motor_board.motors[1].power = -0.2
+        self.R.motor_board.motors[0].power = -speed
+        self.R.motor_board.motors[1].power = speed
         time.sleep(0.4)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
+        time.sleep(0.4)
 
         print("done")
-
+        
+        
     def goToMarker(self, marker_id, speed=0.5):
         self.faceMarker(marker_id)
         markers = self.R.camera.see()
