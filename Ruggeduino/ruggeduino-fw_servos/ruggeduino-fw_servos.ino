@@ -4,7 +4,7 @@
 // We communicate with the power board at 115200 baud.
 #define SERIAL_BAUD 115200
 
-#define FW_VER 1.1
+#define FW_VER 1
 Servo leftServo;
 Servo rightServo;
 
@@ -18,7 +18,7 @@ void setup() {
   leftServo.attach(8);
   rightServo.attach(10);
   leftServo.write(0);
-  rightServo.write(0);
+  rightServo.write(135);
   pinMode(4, INPUT_PULLUP);
   pinMode(2, INPUT_PULLUP);
   pinMode(3, INPUT_PULLUP);
@@ -127,18 +127,18 @@ void loop() {
         leftServo.attach(8);
         rightServo.attach(10);
         leftServo.write(0);
-        rightServo.write(0);
+        rightServo.write(135);
       case 'b': //close leftServo
         leftServo.write(0);
         break;
       case 'c': //close rightServo
-        rightServo.write(0);
+        rightServo.write(135);
         break;
       case 'd': //open leftServo
-        leftServo.write(180);
+        leftServo.write(135);
         break;
       case 'e': //open rightServo
-        rightServo.write(180);
+        rightServo.write(0);
         break;
       //KEGS SR additions end
       default:
