@@ -331,3 +331,14 @@ class robot:
         self.R.servo_board.servos[0].position=0
         time.sleep(0.2)
         self.R.servo_board.servos[2].position=0
+    
+    #Reverses 0.5m and rotates 90 degrees
+    def escape(self):
+        markers = self.R.camera.see_ids()
+        if len(markers) == 0:
+            moveDist(500, -0.3)
+            R.motor_board.motors[0].power = -0.5
+            R.motor_board.motors[1].power = 0.5
+            time.sleep(0.2)
+            R.motor_board.motors[0].power = 0
+            R.motor_board.motors[1].power = 0
