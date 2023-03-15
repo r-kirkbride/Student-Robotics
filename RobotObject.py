@@ -93,7 +93,23 @@ class robot:
                 time.sleep(0.005)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
-
+    
+    
+    def searchForTokens(self):
+        fullMarkers = []
+        for i in range(9):
+            self.R.motor_board.motors[0].power = -0.2
+            self.R.motor_board.motors[1].power = 0.2
+            self.R.sleep(0.3)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+            markers = self.R.camera.see()
+            markers = [marker for marker in markers if marker.id > 27]
+            for marker in markers:
+                if marker in fullMarkers:
+                    markers.remove(marker)
+            fullMarkers += markers
+        markers = sorted(fullMarkers, key=lambda x: x.distance)
     """def rotateDeg(self, deg, speed=0.5):
         rotDist = 100 * math.pi
         degrees = (((deg/360)*400*math.pi)/rotDist)*360
