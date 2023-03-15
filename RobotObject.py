@@ -13,6 +13,12 @@ class robot:
         
         self.R.ruggeduino.command("s") #reset motor encoders
         
+        
+        self.R.ruggeduino.command("g")
+
+        self.R.ruggeduino.command("d")
+        time.sleep(0.5)
+        self.R.ruggeduino.command("e")
         #determines the starting corner of the robot 
         #This because a each of the following markers IDs: 0, 7, 14, 21 is in each of the 4 corners
         """if 14 in markers:
@@ -224,7 +230,13 @@ class robot:
     def rotate(self, degrees):
         pass
     
-    def faceMarker(self, marker_id, speed=0.5):
+    def grabToken(self):
+        self.moveDist(400)
+        self.R.ruggeduino.command("c")
+        time.sleep(0.5)
+        self.R.ruggeduino.command("b")
+    
+  def faceMarker(self, marker_id, speed=0.5):
         markers = self.R.camera.see_ids()
         
         #the robot will stop roating as soon it sees the correct marker in its peripheral 
@@ -241,13 +253,21 @@ class robot:
         markers = self.R.camera.see()
         for marker in markers:
             if marker.id == marker_id:
+                usedMarker = marker
                 dist = marker.distance
-        dist_diff = 1
+        dist2 = -1.0
+        if len(markers) > 0:
+                usedAngle = usedMarker.spherical.rot_y
+                if usedAngle < 0:
+                    speed = 0.2
+                else:
+                    speed = -0.2
         
-        while dist_diff > 0:
+        breakFlag = False
+        while dist2 < dist and not breakFlag:
             
-            self.R.motor_board.motors[0].power = 0.2
-            self.R.motor_board.motors[1].power = -0.2
+            self.R.motor_board.motors[0].power = speed
+            self.R.motor_board.motors[1].power = -speed
             time.sleep(0.4)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
@@ -256,14 +276,22 @@ class robot:
             for marker in markers:
                 if marker.id == marker_id:
                     dist2 = marker.distance
-            dist_diff = dist - dist2 
-            dist = dist2
+                    if dist2 >= dist:
+                        breakFlag = True
+                        break
+                    dist = dist2
 
-        self.R.motor_board.motors[0].power = -0.2
-        self.R.motor_board.motors[1].power = 0.2
-        time.sleep(0.1)
+            print(f"dist_diff: {dist - dist2}")
+
+        self.R.motor_board.motors[0].power = -speed
+        self.R.motor_board.motors[1].power = speed
+        time.sleep(0.4)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
+        time.sleep(0.4)
+
+        print("done")
+
 
     def goToMarker(self, marker_id, speed=0.5):
         self.faceMarker(marker_id)
