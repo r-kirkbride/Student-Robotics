@@ -338,7 +338,16 @@ class robot:
                 for m in markers:
                     marker_ids.append(m.id)
                 print(f"marker ids: {marker_ids}")
-
+                if usedMarker.spherical.rot_y > 0:
+                    speed = 0.2
+                else:
+                    speed = -0.2
+                if abs(usedMarker.spherical.rot_y) > 0.6:
+                    self.R.motor_board.motors[0].power = speed
+                    self.R.motor_board.motors[1].power = -speed
+                    time.sleep(0.4)
+                    self.R.motor_board.motors[0].power = 0
+                    self.R.motor_board.motors[1].power = 0
                 if usedMarker.id in marker_ids:
                     pass
                 else:
