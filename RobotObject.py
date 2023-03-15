@@ -88,7 +88,8 @@ class robot:
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
     
-    def turnDeg(self,angle,speed=0.5,braking = True): #angle in radians
+    def turnDeg(self,angle,speed=0.5,braking = True): #angle in degrees
+        angle = (angle/360)*math.pi
         DEGREES_PER_ROT = 80
         WHEELBASE = 400
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
@@ -113,7 +114,8 @@ class robot:
                 time.sleep(0.005)
         self.R.motor_board.motors[motorNo].power = 0
     
-    def rotateDeg(self,angle,speed=0.5,braking = True): #angle in radians
+    def rotateDeg(self,angle,speed=0.5,braking = True): #angle in degrees
+        angle = (angle/360)*math.pi
         speed = abs(speed)
         DEGREES_PER_ROT = 80
         WHEELBASE = 400
@@ -147,7 +149,6 @@ class robot:
                 time.sleep(0.005)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
-
 
     """def rotateDeg(self, deg, speed=0.5):
         rotDist = 100 * math.pi
