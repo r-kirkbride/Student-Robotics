@@ -113,7 +113,41 @@ class robot:
                 time.sleep(0.005)
         self.R.motor_board.motors[motorNo].power = 0
     
-    
+    def rotateDeg(self,angle,speed=0.5,braking = True): #angle in radians
+        speed = abs(speed)
+        DEGREES_PER_ROT = 80
+        WHEELBASE = 400
+        CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
+        TOLERANCE = 5 #tolerance of difference before it compensates
+        dist = abs(angle) * WHEELBASE * 0.5
+        degrees = (dist/CIRCUMFERENCE)*DEGREES_PER_ROT #number of degrees to rotate
+        self.R.ruggeduino.command("s")
+
+        leftMultiplier , rightMultiplier = -1 , 1
+        if abs(angle) == angle:
+            leftMultiplier , rightMultiplier = 1 , -1
+        
+        while (encLeft + encRight)/2 < degrees:
+            #print(f"L:{encLeft}, {self.R.motor_board.motors[0].power}\tR:{encRight}, {self.R.motor_board.motors[1].power}")
+            encLeft = int(self.R.ruggeduino.command("x"))
+            encRight = int(self.R.ruggeduino.command("y"))
+            if encLeft > encRight + TOLERANCE:
+                self.R.motor_board.motors[0].power -= leftMultiplier * 0.005
+            elif encRight > encLeft + TOLERANCE:
+                self.R.motor_board.motors[1].power -= rightMultiplier * 0.005
+            else:
+                self.R.motor_board.motors[0].power = speed * leftMultiplier
+                self.R.motor_board.motors[1].power = speed * rightMultiplier
+            time.sleep(0.05)
+        if braking:
+            self.R.motor_board.motors[0].power = -1*leftMultiplier
+            self.R.motor_board.motors[1].power = -1*rightMultiplier
+            while int(self.R.ruggeduino.command("x")) > TOLERANCE and int(self.R.ruggeduino.command("y")) > TOLERANCE:
+                self.R.ruggeduino.command("s")
+                time.sleep(0.005)
+        self.R.motor_board.motors[0].power = 0
+        self.R.motor_board.motors[1].power = 0
+
 
     """def rotateDeg(self, deg, speed=0.5):
         rotDist = 100 * math.pi
