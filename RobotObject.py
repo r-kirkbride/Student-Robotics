@@ -296,23 +296,39 @@ class robot:
     def goToMarker(self, marker_id, speed=0.5):
         self.faceMarker(marker_id)
         markers = self.R.camera.see()
-        usedMarker = 9340
+        usedMarker = 934000
         for marker in markers:
             if marker.id == marker_id:
                 usedMarker = marker
-        if usedMarker == 9340:
+        if usedMarker == 934000:
             return "Marker not seen"
-        #adds 20cm buffer between robot and wall
-        counter = 0 
-        while usedMarker.distance > 20:
-            self.drive()
-            if counter == 4:
+        else:
+            print(f"used marker id: {usedMarker.id}")
+            #adds 50mm buffer between robot and object
+            counter = 0 
+            while usedMarker.distance > 50:
+                self.drive(times = 0.5)
                 markers = self.R.camera.see()
-                if usedMarker in markers:
-                    if abs(usedMarker.spherical.rot_y) > 0.5:
-                        self.faceMarker(marker_id)
-                    counter = 0 
-            counter+=1
+                marker_ids = []
+                for m in markers:
+                    marker_ids.append(m.id)
+                print(f"marker ids: {marker_ids}")
+
+                if usedMarker.id in marker_ids:
+                    pass
+                else:
+                    print("cant see marker")
+                    break
+
+                #if counter == 4:
+                    #markers = self.R.camera.see()
+                    # usedMarker in markers:
+                        #if abs(usedMarker.spherical.rot_y) > 0.5:
+                            #self.faceMarker(marker_id)
+                        #counter = 0 
+                #counter+=1
+        
+        print("donee")
     
     #drives to marker until close enough
     def driveToMarker(self):
