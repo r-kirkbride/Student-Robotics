@@ -18,12 +18,25 @@ R has one attribute which is its starting corner which it figures out when the c
 
 ## Methods to use:
 
-### R.moveDist(distance, speed=0.5, braking = Flase)
+### R.moveDist(distance, speed=0.5, braking = False)
 
 Can take 3 arguments:
 - dist - required - distance to move (can be negative to reverse).
 - speed - defaults to 0.5 - maximum speed to run the motors at (should always be positive, but can be negative).
 - braking - defaults to False - determines whether the motors are braked or coasted.
+
+### R.turnDeg(angle, speed=0.5, braking = False)
+- Turns driving only one wheel, so shouldn't lose any tokens.
+- Takes input of an angle degrees. (positive for clockwise, negative for anti-clockwise)
+- Can optionally choose to use braking.
+- Can optionally adjust speed.
+- To turn backwards make speed negative (not recommended).
+
+### R.turnDeg(angle, speed=0.5, braking = False)
+- Turns on the spot (driving wheels in opposite directions).
+- Takes input of an angle degrees (positive for clockwise, negative for anti-clockwise).
+- Can optionally choose to use braking.
+- Can optionally adjust speed. (should not be negative).
 
 ### R.turnOnLED(name="A", colour="cyan")
 
