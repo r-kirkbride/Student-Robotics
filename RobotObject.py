@@ -102,7 +102,7 @@ class robot:
         if angle < 0:
             ruggeduinoCommand , motorNo = "x" , 0
 
-        enc = int(self.R.ruggeduino.command(ruggeduinoCommand)))
+        enc = int(self.R.ruggeduino.command(ruggeduinoCommand))
         while enc < degrees:
             enc = int(self.R.ruggeduino.command(ruggeduinoCommand))
             self.R.motor_board.motors[motorNo].power = speed
@@ -129,6 +129,8 @@ class robot:
         if angle < 0:
             leftMultiplier , rightMultiplier = 1 , -1
         
+        encLeft = int(self.R.ruggeduino.command("x"))
+        encRight = int(self.R.ruggeduino.command("y"))
         while (encLeft + encRight)/2 < degrees:
             #print(f"L:{encLeft}, {self.R.motor_board.motors[0].power}\tR:{encRight}, {self.R.motor_board.motors[1].power}")
             encLeft = int(self.R.ruggeduino.command("x"))
