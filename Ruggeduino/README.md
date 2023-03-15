@@ -19,7 +19,7 @@
 
 ## How to interface with in python:
 - `R.ruggeduino.command("g")` sets up the servos and resets them - **MUST BE RUN BEFORE RUNNING ANY OTHER COMMAND** 
-- `R.ruggeduino.command("b")` closes the left servo
-- `R.ruggeduino.command("c")` closes the right servo
+- `R.ruggeduino.command("b")` holds a box with the left servo
+- `R.ruggeduino.command("c")` holds a box with the right servo
 - `R.ruggeduino.command("d")` opens the left servo
 - `R.ruggeduino.command("e")` opens the right servo
