@@ -230,7 +230,7 @@ class robot:
         pass
     
     def grabToken(self):
-        self.moveDist(400)
+        self.moveDist(600)
         self.R.ruggeduino.command("c")
         time.sleep(0.5)
         self.R.ruggeduino.command("b")
@@ -332,22 +332,28 @@ class robot:
             #adds 50mm buffer between robot and object
             counter = 0 
             while usedMarker.distance > 50:
+                angle = usedMarker.spherical.rot_y
                 self.drive(times = 0.5)
                 markers = self.R.camera.see()
                 marker_ids = []
                 for m in markers:
                     marker_ids.append(m.id)
+                    if m.id == usedMarker.id:
+                        angle = m.spherical.rot_y
                 print(f"marker ids: {marker_ids}")
-                if usedMarker.spherical.rot_y > 0:
-                    speed = 0.2
+                if angle > 0:
+                    speed = -0.15
                 else:
-                    speed = -0.2
-                if abs(usedMarker.spherical.rot_y) > 0.6:
+                    speed = 0.15
+                print(angle)
+                print(speed)
+                if abs(angle) > 0.1:
                     self.R.motor_board.motors[0].power = speed
                     self.R.motor_board.motors[1].power = -speed
                     time.sleep(0.4)
                     self.R.motor_board.motors[0].power = 0
                     self.R.motor_board.motors[1].power = 0
+                    print("corrected")
                 if usedMarker.id in marker_ids:
                     pass
                 else:
