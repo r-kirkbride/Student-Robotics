@@ -129,7 +129,6 @@ class robot:
             time.sleep(0.005)
         R.motor_board.motors[0].power = 0
         R.motor_board.motors[1].power = 0
-
     def moveDeg(self, deg, speed=0.5):
         R.ruggeduino.command("s")
         R.motor_board.motors[0].power = speed
@@ -143,10 +142,10 @@ class robot:
         R.motor_board.motors[0].power = 0
         R.motor_board.motors[1].power = 0"""
 
-    def drive(self):
+    def drive(self, times = 0.5):
         self.R.motor_board.motors[0].power = 0.5
         self.R.motor_board.motors[1].power = 0.5
-        time.sleep(0.1)
+        time.sleep(times)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
 
@@ -236,61 +235,87 @@ class robot:
         time.sleep(0.5)
         self.R.ruggeduino.command("b")
     
-  def faceMarker(self, marker_id, speed=0.5):
-        markers = self.R.camera.see_ids()
+    def faceMarker(self, marker_id):
+        flag = False
         
-        #the robot will stop roating as soon it sees the correct marker in its peripheral 
-        while marker_id not in markers:
-            self.R.motor_board.motors[0].power = speed
-            self.R.motor_board.motors[1].power = -speed
-            time.sleep(0.4)
+        distance = 9999999999
+        counting = 0
+        while counting < 18:
+            self.R.motor_board.motors[0].power = -0.3
+            self.R.motor_board.motors[1].power = 0.3
+            time.sleep(0.5)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
-            time.sleep(0.2)
-            markers = self.R.camera.see_ids()
-
-        #sets up the initial distance as it compares the distance to the marker to previous distances  
-        markers = self.R.camera.see()
-        for marker in markers:
-            if marker.id == marker_id:
-                usedMarker = marker
-                dist = marker.distance
-        dist2 = -1.0
-        if len(markers) > 0:
-                usedAngle = usedMarker.spherical.rot_y
-                if usedAngle < 0:
-                    speed = 0.2
-                else:
-                    speed = -0.2
-        
-        breakFlag = False
-        while dist2 < dist and not breakFlag:
-            
-            self.R.motor_board.motors[0].power = speed
-            self.R.motor_board.motors[1].power = -speed
-            time.sleep(0.4)
-            self.R.motor_board.motors[0].power = 0
-            self.R.motor_board.motors[1].power = 0
-            time.sleep(0.4)
+            time.sleep(0.3)
             markers = self.R.camera.see()
-            for marker in markers:
-                if marker.id == marker_id:
-                    dist2 = marker.distance
-                    if dist2 >= dist:
-                        breakFlag = True
-                        break
-                    dist = dist2
+            for i in range(len(markers)):
+                if markers[i].id == marker_id:
+                    distance = markers[i].distance
+                    print("honed in")
+                    #print(f"distance: {distance}")
 
-            print(f"dist_diff: {dist - dist2}")
+                    #self.lookAtMarker(marker_id)
+                    flag = True
+                    break
+            
+            if flag == True:
+                break
 
-        self.R.motor_board.motors[0].power = -speed
-        self.R.motor_board.motors[1].power = speed
-        time.sleep(0.4)
-        self.R.motor_board.motors[0].power = 0
-        self.R.motor_board.motors[1].power = 0
-        time.sleep(0.4)
+            counting += 1
+        
+        #if counting >= 18:
+            #print(f"Error in first stage of face new marker")
 
-        print("done")
+
+        flag = False
+        count = 0
+        
+        while count < 30:
+
+            self.R.motor_board.motors[0].power = -0.2
+            self.R.motor_board.motors[1].power = 0.2
+            time.sleep(0.2)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+            time.sleep(0.3)
+            markers = self.R.camera.see()
+            for i in range(len(markers)):
+                    if markers[i].id == marker_id:
+                        tempDistance = markers[i].distance
+                        #print(f"new distance: {tempDistance}")
+                        if tempDistance > distance or abs(tempDistance - distance) < 2.5:
+                            print("facing")
+                            #if abs(tempDistance - distance) < 2.5:
+                                #print("tolerance was done")
+                            flag = True
+                            break
+                        else:
+                            distance = tempDistance
+            
+            if flag == True:
+                break
+            
+            count += 1
+        
+            
+        #self.R.motor_board.motors[0].power = 0.2
+        #self.R.motor_board.motors[1].power = -0.2
+        #self.R.sleep(0.1)
+        #self.R.motor_board.motors[0].power = 0
+        #self.R.motor_board.motors[1].power = 0
+        time.sleep(0.1)
+
+        if count >= 30:
+            print("Error in the second in the second stage in the new marker")
+            #print("has turned too much")
+            #in case stuck
+            self.R.motor_board.motors[0].power = -0.5
+            self.R.motor_board.motors[1].power = -0.5
+            time.sleep(0.2)
+            self.R.motor_board.motors[0].power = 0
+            self.R.motor_board.motors[1].power = 0
+            #print("stuck")
+            return
 
 
     def goToMarker(self, marker_id, speed=0.5):
