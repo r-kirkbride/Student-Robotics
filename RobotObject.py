@@ -256,6 +256,7 @@ class robot:
         
         distance = 9999999999
         counting = 0
+        #add clause for when counting is greater than 18 that identifies a new closeset token if we cant see any
         while counting < 18:
             self.R.motor_board.motors[0].power = -0.3
             self.R.motor_board.motors[1].power = 0.3
