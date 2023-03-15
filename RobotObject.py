@@ -57,8 +57,8 @@ class robot:
     def moveDist(self, dist, speed=0.5,braking = True):
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
         TOLERANCE = 5 #tolerance of difference before it compensates
-        degreesPerRot = 80
-        degrees = (dist/CIRCUMFERENCE)*degreesPerRot #number of degrees to rotate
+        DEGREES_PER_ROT = 80
+        degrees = (dist/CIRCUMFERENCE)*DEGREES_PER_ROT #number of degrees to rotate
         reverseMultiplier = speed/abs(speed) #will be -1 if robot is going to reverse, otherwise 1
         if dist < 0:
             return self.moveDist(abs(dist),-speed,braking)
@@ -87,6 +87,33 @@ class robot:
                 time.sleep(0.005)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
+    
+    def turnDeg(self,angle,speed=0.5,braking = True): #angle in radians
+        DEGREES_PER_ROT = 80
+        WHEELBASE = 400
+        CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
+        TOLERANCE = 5 #tolerance of difference before it compensates
+        dist = abs(angle) * WHEELBASE
+        degrees = (dist/CIRCUMFERENCE)*DEGREES_PER_ROT #number of degrees to rotate
+        reverseMultiplier = speed/abs(speed)
+        self.R.ruggeduino.command("s")
+        ruggeduinoCommand , motorNo = "y" , 1
+        if abs(angle) == angle:
+            ruggeduinoCommand , motorNo = "x" , 0
+
+        enc = int(self.R.ruggeduino.command(ruggeduinoCommand)))
+        while enc < degrees:
+            enc = int(self.R.ruggeduino.command(ruggeduinoCommand))
+            self.R.motor_board.motors[motorNo].power = speed
+        
+        if braking:
+            self.R.motor_board.motors[motorNo].power = -1*reverseMultiplier
+            while int(self.R.ruggeduino.command(ruggeduinoCommand)) > 5:
+                self.R.ruggeduino.command("s")
+                time.sleep(0.005)
+        self.R.motor_board.motors[motorNo].power = 0
+    
+    
 
     """def rotateDeg(self, deg, speed=0.5):
         rotDist = 100 * math.pi
