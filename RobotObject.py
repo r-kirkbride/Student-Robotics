@@ -82,7 +82,7 @@ class robot:
         if braking:
             self.R.motor_board.motors[0].power = -1*reverseMultiplier
             self.R.motor_board.motors[1].power = -1*reverseMultiplier
-            while int(self.R.ruggeduino.command("x")) > 5 and int(self.R.ruggeduino.command("y")) > 5:
+            while int(self.R.ruggeduino.command("x")) > TOLERANCE and int(self.R.ruggeduino.command("y")) > TOLERANCE:
                 self.R.ruggeduino.command("s")
                 time.sleep(0.005)
         self.R.motor_board.motors[0].power = 0
@@ -98,7 +98,7 @@ class robot:
         reverseMultiplier = speed/abs(speed)
         self.R.ruggeduino.command("s")
         ruggeduinoCommand , motorNo = "y" , 1
-        if abs(angle) == angle:
+        if angle < 0:
             ruggeduinoCommand , motorNo = "x" , 0
 
         enc = int(self.R.ruggeduino.command(ruggeduinoCommand)))
@@ -108,7 +108,7 @@ class robot:
         
         if braking:
             self.R.motor_board.motors[motorNo].power = -1*reverseMultiplier
-            while int(self.R.ruggeduino.command(ruggeduinoCommand)) > 5:
+            while int(self.R.ruggeduino.command(ruggeduinoCommand)) > TOLERANCE:
                 self.R.ruggeduino.command("s")
                 time.sleep(0.005)
         self.R.motor_board.motors[motorNo].power = 0
@@ -124,7 +124,7 @@ class robot:
         self.R.ruggeduino.command("s")
 
         leftMultiplier , rightMultiplier = -1 , 1
-        if abs(angle) == angle:
+        if angle < 0:
             leftMultiplier , rightMultiplier = 1 , -1
         
         while (encLeft + encRight)/2 < degrees:
