@@ -89,8 +89,8 @@ class robot:
         self.R.motor_board.motors[1].power = 0
     
     def turnDeg(self,angle,speed=0.5,braking = True): #angle in degrees
-        angle = (angle/360)*math.pi
-        DEGREES_PER_ROT = 80
+        angle = (angle/180)*math.pi
+        DEGREES_PER_ROT = 90
         WHEELBASE = 400
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
         TOLERANCE = 5 #tolerance of difference before it compensates
@@ -99,13 +99,15 @@ class robot:
         reverseMultiplier = speed/abs(speed)
         self.R.ruggeduino.command("s")
         ruggeduinoCommand , motorNo = "y" , 1
-        if angle < 0:
+        if angle >= 0:
             ruggeduinoCommand , motorNo = "x" , 0
 
         enc = int(self.R.ruggeduino.command(ruggeduinoCommand))
         while enc < degrees:
+            print(enc)
             enc = int(self.R.ruggeduino.command(ruggeduinoCommand))
             self.R.motor_board.motors[motorNo].power = speed
+            time.sleep(0.005)
         
         if braking:
             self.R.motor_board.motors[motorNo].power = -1*reverseMultiplier
@@ -115,9 +117,9 @@ class robot:
         self.R.motor_board.motors[motorNo].power = 0
     
     def rotateDeg(self,angle,speed=0.5,braking = True): #angle in degrees
-        angle = (angle/360)*math.pi
+        angle = (angle/180)*math.pi
         speed = abs(speed)
-        DEGREES_PER_ROT = 80
+        DEGREES_PER_ROT = 81.5
         WHEELBASE = 400
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
         TOLERANCE = 5 #tolerance of difference before it compensates
@@ -126,7 +128,7 @@ class robot:
         self.R.ruggeduino.command("s")
 
         leftMultiplier , rightMultiplier = -1 , 1
-        if angle < 0:
+        if angle >= 0:
             leftMultiplier , rightMultiplier = 1 , -1
         
         encLeft = int(self.R.ruggeduino.command("x"))
