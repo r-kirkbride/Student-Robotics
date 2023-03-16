@@ -18,12 +18,11 @@ R has one attribute which is its starting corner which it figures out when the c
 
 ## Methods to use:
 
-### R.moveDist(distance, speed=0.5, braking = False)
-
+### R.moveDist(distance, speed=0.5, braking = True)
 Can take 3 arguments:
 - dist - required - distance to move (can be negative to reverse).
 - speed - defaults to 0.5 - maximum speed to run the motors at (should always be positive, but can be negative).
-- braking - defaults to False - determines whether the motors are braked or coasted.
+- braking - defaults to True - determines whether the motors are braked or coasted.
 
 ### R.turnDeg(angle, speed=0.5, braking = False)
 - Turns driving only one wheel, so shouldn't lose any tokens.
@@ -56,7 +55,7 @@ takes two arguments, a number for the marker id and a speed which defaults to 0.
 
 ### R.goToMarker(markerID, speed=0.5)
 
-takes two arguments, a number for the marker id and a speed which defaults to 0.5. This rotates the robot until it is facing the specified marker, then moves in a straight line towards the marker until it is 5cm away 
+takes two arguments, a number for the marker id and a speed which defaults to 0.5. This rotates the robot until it is facing the specified marker, then moves in a straight line towards the marker until it is 35cm away 
 
 ### R.driveToMarker()
 

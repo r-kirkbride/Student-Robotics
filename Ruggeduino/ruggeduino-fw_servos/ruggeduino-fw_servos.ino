@@ -128,11 +128,11 @@ void loop() {
         rightServo.attach(10);
         leftServo.write(0);
         rightServo.write(135);
-      case 'b': //close leftServo
-        leftServo.write(0);
+      case 'b': //hold box position leftServo
+        leftServo.write(45);
         break;
-      case 'c': //close rightServo
-        rightServo.write(135);
+      case 'c': //hold box position rightServo
+        rightServo.write(90);
         break;
       case 'd': //open leftServo
         leftServo.write(135);
