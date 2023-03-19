@@ -151,7 +151,7 @@ class robot:
         self.R.ruggeduino.command("d")
         time.sleep(0.5)
         self.R.ruggeduino.command("e")
-        self.moveDist(-1050)
+        self.moveDist(1050)
         
     def faceMarker(self, marker_id):
         flag = False
@@ -228,7 +228,7 @@ class robot:
 
 
     def goToMarker(self, marker_id, speed=0.5):
-        self.faceMarker(marker_id)
+        #self.faceMarker(marker_id)
         markers = self.R.camera.see()
         usedMarker = 934000
         for marker in markers:
@@ -304,7 +304,15 @@ class robot:
             fullMarkers += markers
         markers = sorted(fullMarkers, key=lambda x: x.distance)
 
-
+    def goClosestHome(markers):
+        usedId = 0809
+        for marker in markers:
+            if marker in self.homeMarkers:
+                usedId = marker
+                break
+        self.goToMarker(usedID)
+        
+    
     def main(self):
         self.goToMarker(33)
         self.grabToken()
