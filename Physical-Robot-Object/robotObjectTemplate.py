@@ -341,7 +341,7 @@ class robot:
 
             self.goToMarker(73)
             self.grabToken()
-            self.rotateDeg(180)
+            self.rotateDeg(-180)
             return
             
         else:
@@ -359,7 +359,7 @@ class robot:
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
                 self.goToMarker(73)
                 self.grabToken()
-                self.rotateDeg(180)
+                self.rotateDeg(-180)
             
             else:
 
@@ -374,7 +374,7 @@ class robot:
                         self.moveDist(500)
                         self.goToMarker(73)
                         self.grabToken()
-                        self.rotateDeg(180)
+                        self.rotateDeg(-180)
                     
                     else:
 
@@ -387,13 +387,13 @@ class robot:
                         
                             self.goToMarker(73)
                             self.grabToken()
-                            self.rotateDeg(120)
+                            self.rotateDeg(-120)
                         
                         else:
                             self.faceMarker([73])
                             self.goToMarker(73)
                             self.grabToken()
-                            self.rotateDeg(120)
+                            self.rotateDeg(-120)
 
                 else:
                     #place to put escape method because no disered markers can be seen
@@ -540,4 +540,3 @@ class robot:
                 print("running retrieve")
                 self.retrive(self.retrieveTargetMarkers)
         
-
