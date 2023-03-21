@@ -15,14 +15,11 @@ class robot:
         
         self.zone = self.R.zone
 
-        if self.zone == 3:
-            self.homeMarkers = [18,19,20,21,22,23]
-        elif self.zone == 2:
-            self.homeMarkers = [11,12,13,14,15,16]
-        elif self.zone == 1:
-            self.homeMarkers = [4,5,6,7,8,9]
-        else:
-            self.homeMarkers = [25,26,27,0,1,2]
+        markersList = [[25,26,27,0,1,2], [4,5,6,7,8,9], [11,12,13,14,15,16], [18,19,20,21,22,23]]
+        self.homeMarkers = markersList[self.zone]
+        self.adjacentMarkers = markersList[(self.zone + 1)%4]
+        self.oppositeMarkers = markersList[(self.zone + 2)%4]
+        self.endMarkers = markersList[(self.zone + 3)%4]
 
         self.R.ruggeduino.command("g")
 
@@ -146,12 +143,13 @@ class robot:
         self.R.ruggeduino.command("c")
         time.sleep(0.5)
         self.R.ruggeduino.command("b")
+        self.moveDist(-1050)
 
     def releaseToken(self):
         self.R.ruggeduino.command("d")
         time.sleep(0.5)
         self.R.ruggeduino.command("e")
-        self.moveDist(1050)
+        self.moveDist(-1050)
         
     def faceMarker(self, marker_id):
         flag = False
@@ -227,7 +225,7 @@ class robot:
             return
 
 
-    def goToMarker(self, marker_id, speed=0.5):
+    def goToMarker(self, marker_id, speed=0.5, minDist=1200):
         #self.faceMarker(marker_id)
         markers = self.R.camera.see()
         usedMarker = 934000
@@ -244,7 +242,7 @@ class robot:
             
             angle = usedMarker.spherical.rot_y
             dist = usedMarker.distance
-            while dist > 1200:
+            while dist > minDist:
                 print(f"{usedMarker.distance}")
                 angle = usedMarker.spherical.rot_y
                 dist = usedMarker.distance
@@ -285,6 +283,13 @@ class robot:
         for marker in markers:
             if marker.id in self.homeMarkers:
                 self.goToMarker(marker.id)
+                return
+
+    def goAdjacent(self):
+        markers = self.R.camera.see()
+        for marker in markers:
+            if marker.id in self.adjacentMarkers:
+                self.goToMarker(marker.id, maxDist=2875)
                 return
     
     def searchForTokens(self):
