@@ -12,8 +12,8 @@ class robot:
         
         self.R.ruggeduino.command("s") #reset motor encoders
         
-        self.zone = self.R.zone
-
+        #self.zone = self.R.zone
+        self.zone = 0
         self.markersList = [[25,26,27,0,1,2], [4,5,6,7,8,9], [11,12,13,14,15,16], [18,19,20,21,22,23]]
         self.homeMarkers = self.markersList[self.zone]
         self.adjacentMarkers = self.markersList[(self.zone + 1)%4]
@@ -137,17 +137,18 @@ class robot:
 
     
     def grabToken(self):
-        self.moveDist(1050)
+        self.moveDist(900)
         self.R.ruggeduino.command("c")
         time.sleep(0.5)
         self.R.ruggeduino.command("b")
-        self.moveDist(-1050)
+        time.sleep(0.5)
+        self.moveDist(-800)
 
     def releaseToken(self):
         self.R.ruggeduino.command("d")
         time.sleep(0.5)
         self.R.ruggeduino.command("e")
-        self.moveDist(-1050)
+        self.moveDist(-800)
         
     def faceMarker(self, targetMarkers):
         flag = False
@@ -240,14 +241,14 @@ class robot:
 
 
 
-    def goToMarker(self, marker_id, speed=0.5, minDist=1200):
+    def goToMarker(self, marker_id, speed=0.5, minDist=1100):
         #self.faceMarker(marker_id)
         markers = self.R.camera.see()
-        usedMarker = 934000
+        usedMarker = None
         for marker in markers:
             if marker.id == marker_id:
                 usedMarker = marker
-        if usedMarker == 934000:
+        if usedMarker == None:
             return
         else:
             print(f"used marker id: {usedMarker.id}")
@@ -357,9 +358,18 @@ class robot:
                 #CHANGE TO 1000 FOR THE ACTUAL COMPETITION (MAYBE)
                 self.moveDist(500)
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-                self.goToMarker(73)
-                self.grabToken()
-                self.rotateDeg(-180)
+                if 73 in markers:
+
+                    self.goToMarker(73)
+                    self.grabToken()
+                    self.rotateDeg(-180)
+
+                else:
+
+                    self.faceMarker([73])
+                    self.goToMarker(73)
+                    self.grabToken()
+                    self.rotateDeg(-180)
             
             else:
 
@@ -437,7 +447,7 @@ class robot:
             
         if len(wantedMarkers) != 0:
 
-            self.goToMarker(wantedMarkers[0], minDist=1250)
+            self.goToMarker(wantedMarkers[0], minDist=1000)
             self.releaseToken()
             self.rotateDeg(180)
         
@@ -447,7 +457,7 @@ class robot:
 
             if closestMarker != None:
 
-                self.goToMarker(closestMarker, minDist=1250)
+                self.goToMarker(closestMarker, minDist=1000)
                 self.releaseToken()
                 self.rotateDeg(180)
             
@@ -463,7 +473,7 @@ class robot:
                 #im assuming we can see it
                 if closestMarker != None:
                     
-                    self.goToMarker(closestMarker, minDist=1250)
+                    self.goToMarker(closestMarker, minDist=1000)
 
                     #should turn 90 anticlockwise
                     self.turnDeg(-90)
@@ -539,4 +549,3 @@ class robot:
                 self.repeat = False
                 print("running retrieve")
                 self.retrive(self.retrieveTargetMarkers)
-        
