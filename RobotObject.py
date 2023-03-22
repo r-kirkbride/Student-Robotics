@@ -307,15 +307,6 @@ class robot:
                     markers.remove(marker)
             fullMarkers += markers
         markers = sorted(fullMarkers, key=lambda x: x.distance)
-
-    def goClosestHome(markers):
-        usedId = 0809
-        for marker in markers:
-            if marker in self.homeMarkers:
-                usedId = marker
-                break
-        self.goToMarker(usedID)
-        
     
     def main(self):
         self.goToMarker(33)
