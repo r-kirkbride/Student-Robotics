@@ -141,8 +141,9 @@ class robot:
     def grabToken(self):
         self.moveDist(1050)
         self.R.ruggeduino.command("c")
-        time.sleep(0.5)
+        time.sleep(0.1)
         self.R.ruggeduino.command("b")
+        time.sleep(0.5)
         self.moveDist(-1050)
 
     def releaseToken(self):
@@ -228,53 +229,51 @@ class robot:
     def goToMarker(self, marker_id, speed=0.5, minDist=1200):
         #self.faceMarker(marker_id)
         markers = self.R.camera.see()
-        usedMarker = 934000
+        usedMarker = None
         for marker in markers:
             if marker.id == marker_id:
                 usedMarker = marker
-        if usedMarker == 934000:
+        if usedMarker == None:
             return "Marker not seen"
-        else:
-            print(f"used marker id: {usedMarker.id}")
-            #adds 50mm buffer between robot and object
-            counter = 0
-            
-            
+        print(f"used marker id: {usedMarker.id}")
+        #adds 50mm buffer between robot and object
+        counter = 0
+        
+        angle = usedMarker.spherical.rot_y
+        dist = usedMarker.distance
+        while dist > minDist:
+            print(f"{usedMarker.distance}")
             angle = usedMarker.spherical.rot_y
             dist = usedMarker.distance
-            while dist > minDist:
-                print(f"{usedMarker.distance}")
-                angle = usedMarker.spherical.rot_y
-                dist = usedMarker.distance
-                self.drive(times = 0.5)
-                markers = self.R.camera.see()
-                marker_ids = []
-                for m in markers:
-                    marker_ids.append(m.id)
-                    if m.id == usedMarker.id:
-                        angle = m.spherical.rot_y
-                        dist = m.distance
-                        break
-                print(f"distance: {dist}")
-                print(f"marker ids: {marker_ids}")
-                if angle > 0:
-                    speed = -0.15
-                else:
-                    speed = 0.15
-                print(angle)
-                print(speed)
-                if abs(angle) > 0.08:
-                    self.R.motor_board.motors[0].power = speed
-                    self.R.motor_board.motors[1].power = -speed
-                    time.sleep(0.4)
-                    self.R.motor_board.motors[0].power = 0
-                    self.R.motor_board.motors[1].power = 0
-                    print("corrected")
-                if usedMarker.id in marker_ids:
-                    pass
-                else:
-                    print("cant see marker")
+            self.drive(times = 0.5)
+            markers = self.R.camera.see()
+            marker_ids = []
+            for m in markers:
+                marker_ids.append(m.id)
+                if m.id == usedMarker.id:
+                    angle = m.spherical.rot_y
+                    dist = m.distance
                     break
+            print(f"distance: {dist}")
+            print(f"marker ids: {marker_ids}")
+            if angle > 0:
+                speed = -0.15
+            else:
+                speed = 0.15
+            print(angle)
+            print(speed)
+            if abs(angle) > 0.08:
+                self.R.motor_board.motors[0].power = speed
+                self.R.motor_board.motors[1].power = -speed
+                time.sleep(0.4)
+                self.R.motor_board.motors[0].power = 0
+                self.R.motor_board.motors[1].power = 0
+                print("corrected")
+            if usedMarker.id in marker_ids:
+                pass
+            else:
+                print("cant see marker")
+                break
         
         print("donee")
 
@@ -289,7 +288,7 @@ class robot:
         markers = self.R.camera.see()
         for marker in markers:
             if marker.id in self.adjacentMarkers:
-                self.goToMarker(marker.id, maxDist=2875)
+                self.goToMarker(marker.id, minDist=2875)
                 return
     
     def searchForTokens(self):
