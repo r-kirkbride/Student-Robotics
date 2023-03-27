@@ -18,7 +18,7 @@ class robot:
         #self.zone = self.R.zone
         self.zone = 0
         self.markersList = [[25,26,27,0,1,2], [4,5,6,7,8,9], [11,12,13,14,15,16], [18,19,20,21,22,23]]
-        self.homeMarkers = self.markersList[self.zone]
+        self.homeMarkers = self.markersList[self.zone][1:-2]
         self.adjacentMarkers = self.markersList[(self.zone + 1)%4]
         self.oppositeMarkers = self.markersList[(self.zone + 2)%4]
         self.endMarkers = self.markersList[(self.zone + 3)%4]
@@ -132,8 +132,8 @@ class robot:
 
 
     def drive(self, times = 0.5):
-        self.R.motor_board.motors[0].power = 0.5
-        self.R.motor_board.motors[1].power = 0.5
+        self.R.motor_board.motors[0].power = 0.6
+        self.R.motor_board.motors[1].power = 0.6
         time.sleep(times)
         self.R.motor_board.motors[0].power = 0
         self.R.motor_board.motors[1].power = 0
@@ -141,13 +141,13 @@ class robot:
     
     def grabToken(self):
         #lastDist value gotten from goToMarker method
-        dist = self.lastDist
+        #dist = self.lastDist
         
-        actualDist = math.sqrt((dist ** 2) - (self.HEIGHT ** 2))
+        #actualDist = math.sqrt((dist ** 2) - (self.HEIGHT ** 2))
 
         #value tbd during testing 
-        print(f"When grabbing, lastDist = {dist}")
-        self.moveDist(dist-50)
+        print(f"When grabbing, lastDist = {self.lastDist}")
+        self.moveDist(self.lastDist-100)
         self.R.ruggeduino.command("c")
         time.sleep(0.5)
         self.R.ruggeduino.command("b")
@@ -157,13 +157,13 @@ class robot:
     def releaseToken(self):
 
         #lastDist value gotten from goToMarker method
-        dist = self.lastDist
+        #dist = self.lastDist
 
-        actualDist = math.sqrt((dist ** 2) - (self.HEIGHT ** 2))
+        #actualDist = math.sqrt((dist ** 2) - (self.HEIGHT ** 2))
 
         #value tbd during testing 
-        print(f"When releasing, lastDist = {dist}")
-        self.moveDist(dist-600)
+        print(f"When releasing, lastDist = {self.lastDist}")
+        self.moveDist(self.lastDist-700)
 
         self.R.ruggeduino.command("d")
         time.sleep(0.5)
@@ -181,8 +181,8 @@ class robot:
 
         #add clause for when counting is greater than 18 that identifies a new closeset token if we cant see any
         while counting < 18:
-            self.R.motor_board.motors[0].power = -0.3
-            self.R.motor_board.motors[1].power = 0.3
+            self.R.motor_board.motors[0].power = 0.3
+            self.R.motor_board.motors[1].power = -0.3
             time.sleep(0.5)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
@@ -192,7 +192,7 @@ class robot:
                 if markers[i].id in targetMarkers:
                 #if markers[i].id == marker_id:
                     distance = markers[i].distance
-
+                    self.closestMarkerDistance = distance
                     marker_id = markers[i].id
                     print("honed in")
                     
@@ -203,70 +203,14 @@ class robot:
                 break
 
             counting += 1
-        
-        if marker_id != None:
-
-            flag = False
-            count = 0
             
-            #maybe make 30 smaller??????
-            while count < 30:
-
-                self.R.motor_board.motors[0].power = -0.2
-                self.R.motor_board.motors[1].power = 0.2
-                time.sleep(0.2)
-                self.R.motor_board.motors[0].power = 0
-                self.R.motor_board.motors[1].power = 0
-                time.sleep(0.3)
-                markers = self.R.camera.see()
-                for i in range(len(markers)):
-                        if markers[i].id == marker_id:
-                            tempDistance = markers[i].distance
-                            
-                            if tempDistance > distance or abs(tempDistance - distance) < 2.5:
-                                self.closestMarkerDistance = marker.dist
-                                print("facing")
-                                
-                                flag = True
-                                break
-                            else:
-                                distance = tempDistance
-                
-                if flag == True:
-                    break
-                
-                count += 1
-            
-            time.sleep(0.1)
-
-            
-
-            if count >= 30:
-                print("Robot stuck when looking for marker")
-                
-                #in case stuck
-                self.R.motor_board.motors[0].power = -0.5
-                self.R.motor_board.motors[1].power = -0.5
-                time.sleep(0.2)
-                self.R.motor_board.motors[0].power = 0
-                self.R.motor_board.motors[1].power = 0
-                #print("stuck")
-                return None
-
-        else:
-
-            for marker in markers:
-                if marker.id != 73:
-                    self.closeMarker = marker.id
-                    
-        
         return marker_id
 
 
 
     def goToMarker(self, marker_id, speed=0.5, minDist=1100):
 
-        self.lastDist = None
+        self.lastDist = 800
 
         #self.faceMarker(marker_id)
         markers = self.R.camera.see()
@@ -296,7 +240,7 @@ class robot:
                     if m.id == usedMarker.id:
                         angle = m.spherical.rot_y
                         dist = m.distance
-                        self.lastDist = m.distance
+                        self.lastDist = dist
                         break
                 print(f"distance: {dist}")
                 print(f"marker ids: {marker_ids}")
@@ -369,7 +313,7 @@ class robot:
 
             self.goToMarker(73)
             dist = 2
-            self.grabToken(dist)
+            self.grabToken()
             self.rotateDeg(-180)
             return
             
@@ -410,7 +354,7 @@ class robot:
                     if 73 in markers:
                         #CHANGE TO 1000 FOR THE ACTUAL COMPETITION (MAYBE)
 
-                        actualclosestMarkerDistance = math.sqrt((self.closestMarkerDistance ** 2) - (self.HEIGHT ** 2))
+                        #actualclosestMarkerDistance = math.sqrt((self.closestMarkerDistance ** 2) - (self.HEIGHT ** 2))
 
                         if self.closestMarkerDistance > 700:
                             self.moveDist(500)  #maybe this is causing the robot to run into the wall
@@ -429,13 +373,13 @@ class robot:
                         
                             self.goToMarker(73)
                             self.grabToken()
-                            self.rotateDeg(-120)
+                            self.rotateDeg(120)
                         
                         else:
                             self.faceMarker([73])
                             self.goToMarker(73)
                             self.grabToken()
-                            self.rotateDeg(-120)
+                            self.rotateDeg(120)
 
                 else:
                     #place to put escape method because no disered markers can be seen
