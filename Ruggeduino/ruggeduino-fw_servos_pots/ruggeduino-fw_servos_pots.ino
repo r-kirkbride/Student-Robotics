@@ -25,19 +25,6 @@ void setup() {
   rightServo.attach(10);
   leftServo.write(0);
   rightServo.write(135);
-  delay(1000);
-  reset[0] = analogRead(leftPot);
-  reset[1] = analogRead(rightPot);
-  leftServo.write(45);
-  rightServo.write(90);
-  delay(1000);
-  hold[0] = analogRead(leftPot);
-  hold[1] = analogRead(rightPot);
-  leftServo.write(135);
-  rightServo.write(0);
-  delay(1000);
-  open[0] = analogRead(leftPot);
-  open[1] = analogRead(rightPot);
   pinMode(4, INPUT_PULLUP);
   pinMode(2, INPUT_PULLUP);
   pinMode(3, INPUT_PULLUP);
@@ -181,6 +168,23 @@ void loop() {
           rightServo.write(90);
           //Serial.println("failed");
         }
+        break;
+      case 'j':
+        leftServo.write(0);
+        rightServo.write(135);
+        delay(1000);
+        reset[0] = analogRead(leftPot);
+        reset[1] = analogRead(rightPot);
+        leftServo.write(45);
+        rightServo.write(90);
+        delay(1000);
+        hold[0] = analogRead(leftPot);
+        hold[1] = analogRead(rightPot);
+        leftServo.write(135);
+        rightServo.write(0);
+        delay(1000);
+        open[0] = analogRead(leftPot);
+        open[1] = analogRead(rightPot);
         break;
       //KEGS SR additions end
       default:
