@@ -1,0 +1,43 @@
+[0:00:00] ---
+[0:00:00] Student Robotics OS 2023.2.1
+[0:00:00] Is there something you'd like us to add to the kit or API? 💡
+[0:00:00] Perhaps there's something you think we should improve? 🛠️
+[0:00:00] Let us know your feedback about your experience using our kit at https://studentrobotics.org/kit-feedback 🗣️
+[0:00:00] ---
+[0:00:00] === LOG STARTED ===
+[0:00:09.796524] sr.robot3.robot INFO - Using legacy coordinate system for vision
+[0:00:15.657752] sr.robot3.robot INFO - Found Student Robotics v4 Motor Board - SR0UCD
+[0:00:15.667732] sr.robot3.robot INFO - Found Student Robotics v4 Power Board - sr0GU20
+[0:00:15.677551] sr.robot3.robot INFO - Found AprilTag Camera Board - UVC Camera (046d:0825) - 0
+[0:00:15.683786] sr.robot3.robot INFO - Found Ruggeduino - 75230313833351617091
+[0:00:15.689916] sr.robot3.robot INFO - Waiting for start signal
+[0:00:16.778583] sr.robot3.robot INFO - Start signal received; continuing.
+[0:00:16.786461] [12, 13, 14, 15]
+[0:00:17.886031] [18, 19, 20, 21, 22]
+[0:00:17.899438] running fetch
+[0:00:18.845744] used marker id: 73
+[0:00:18.853106] 1498
+[0:00:20.334313] distance: 826
+[0:00:20.340737] marker ids: [73]
+[0:00:20.346951] -0.010368013001326021
+[0:00:20.374101] 0.15
+[0:00:20.380249] donee
+[0:00:20.386931] we have gone to 73, to be grabbed
+[0:00:21.440854] When grabbing, lastDist = 826
+[0:00:23.646549] Traceback (most recent call last):
+[0:00:23.660704]   File "/run/media/robot/ROBOT/robot.py", line 6, in <module>
+[0:00:23.669196]     r.main()
+[0:00:23.675412]   File "/run/media/robot/ROBOT/robotObjectCleaned.py", line 598, in main
+[0:00:23.682421]     self.fetch(self.fetchTargetMarkers)
+[0:00:23.690275]   File "/run/media/robot/ROBOT/robotObjectCleaned.py", line 325, in fetch
+[0:00:23.697340]     self.grabToken()
+[0:00:23.704916]   File "/run/media/robot/ROBOT/robotObjectCleaned.py", line 160, in grabToken
+[0:00:23.713526]     self.moveDist(-800)
+[0:00:23.720895]   File "/run/media/robot/ROBOT/robotObjectCleaned.py", line 43, in moveDist
+[0:00:23.727994]     return self.moveDist(abs(dist),-speed,braking)
+[0:00:23.734388]   File "/run/media/robot/ROBOT/robotObjectCleaned.py", line 45, in moveDist
+[0:00:23.741872]     self.R.motor_board.motors[0].power = speed
+[0:00:23.748905]   File "/usr/lib/python3.10/site-packages/j5/components/motor.py", line 92, in power
+[0:00:23.755677]     raise ValueError("Motor power must be between 1 and -1.")
+[0:00:23.763039] ValueError: Motor power must be between 1 and -1.
+[0:00:24.279734] === LOG FINISHED ===
