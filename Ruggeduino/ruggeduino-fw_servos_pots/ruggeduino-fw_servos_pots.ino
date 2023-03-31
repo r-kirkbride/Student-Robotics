@@ -137,7 +137,7 @@ void loop() {
         break;
       case 'b': //hold box position leftServo
         leftServo.write(45);
-        delay(1000);
+        delay(500);
         //Serial.println(analogRead(leftPot));
         if ((analogRead(leftPot) < hold[0] - POT_TOLERANCE)||(analogRead(leftPot) > hold[0] + POT_TOLERANCE)) {
           leftServo.write(135);
@@ -146,45 +146,45 @@ void loop() {
         break;
       case 'c': //hold box position rightServo
         rightServo.write(90);
-        delay(1000);
+        delay(500);
         //Serial.println(analogRead(rightPot));
         if ((analogRead(rightPot) < hold[1] - POT_TOLERANCE)||(analogRead(rightPot) > hold[1] + POT_TOLERANCE)) {
           rightServo.write(0);
           //Serial.println("failed");
         }
         break;
-      case 'd': //open leftServo
+      case 'd': //open leftServo - takes 0.7s
         leftServo.write(135);
-        delay(1000);
+        delay(700);
         if ((analogRead(leftPot) < open[0] - POT_TOLERANCE)||(analogRead(leftPot) > open[0] + POT_TOLERANCE)) {
           leftServo.write(45);
           //Serial.println("failed");
         }
         break;
-      case 'e': //open rightServo
+      case 'e': //open rightServo - takes 0.7s
         rightServo.write(0);
-        delay(1000);
+        delay(700);
         if ((analogRead(rightPot) < open[1] - POT_TOLERANCE)||(analogRead(rightPot) > open[1] + POT_TOLERANCE)) {
           rightServo.write(90);
           //Serial.println("failed");
         }
         break;
-      case 'j':
+      case 'j'://takes 1.5s
         leftServo.attach(8);
         rightServo.attach(10);
         leftServo.write(0);
         rightServo.write(135);
-        delay(1000);
+        delay(700);
         reset[0] = analogRead(leftPot);
         reset[1] = analogRead(rightPot);
         leftServo.write(45);
         rightServo.write(90);
-        delay(1000);
+        delay(300);
         hold[0] = analogRead(leftPot);
         hold[1] = analogRead(rightPot);
         leftServo.write(135);
         rightServo.write(0);
-        delay(1000);
+        delay(500);
         open[0] = analogRead(leftPot);
         open[1] = analogRead(rightPot);
         break;
