@@ -164,12 +164,14 @@ void loop() {
       case 'e': //open rightServo
         rightServo.write(0);
         delay(1000);
-        if ((analogRead(rightPot) < open[0] - POT_TOLERANCE)||(analogRead(rightPot) > open[0] + POT_TOLERANCE)) {
+        if ((analogRead(rightPot) < open[1] - POT_TOLERANCE)||(analogRead(rightPot) > open[1] + POT_TOLERANCE)) {
           rightServo.write(90);
           //Serial.println("failed");
         }
         break;
       case 'j':
+        leftServo.attach(8);
+        rightServo.attach(10);
         leftServo.write(0);
         rightServo.write(135);
         delay(1000);
