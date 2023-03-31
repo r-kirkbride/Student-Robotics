@@ -137,10 +137,13 @@ void loop() {
         break;
       case 'b': //hold box position leftServo
         leftServo.write(45);
+        rightServo.write(90);
         delay(500);
         //Serial.println(analogRead(leftPot));
         if ((analogRead(leftPot) < hold[0] - POT_TOLERANCE)||(analogRead(leftPot) > hold[0] + POT_TOLERANCE)) {
           leftServo.write(135);
+        if ((analogRead(rightPot) < hold[1] - POT_TOLERANCE)||(analogRead(rightPot) > hold[1] + POT_TOLERANCE)) {
+          rightServo.write(0);
           //Serial.println("failed");
         }
         break;
@@ -155,15 +158,18 @@ void loop() {
         break;
       case 'd': //open leftServo - takes 0.7s
         leftServo.write(135);
-        delay(700);
+        rightServo.write(0);
+        delay(500);
         if ((analogRead(leftPot) < open[0] - POT_TOLERANCE)||(analogRead(leftPot) > open[0] + POT_TOLERANCE)) {
           leftServo.write(45);
+        if ((analogRead(rightPot) < open[1] - POT_TOLERANCE)||(analogRead(rightPot) > open[1] + POT_TOLERANCE)) {
+          rightServo.write(90);
           //Serial.println("failed");
         }
         break;
       case 'e': //open rightServo - takes 0.7s
         rightServo.write(0);
-        delay(700);
+        delay(500);
         if ((analogRead(rightPot) < open[1] - POT_TOLERANCE)||(analogRead(rightPot) > open[1] + POT_TOLERANCE)) {
           rightServo.write(90);
           //Serial.println("failed");
