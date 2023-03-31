@@ -13,10 +13,9 @@ class robot:
         self.R.ruggeduino.command("s") #reset motor encoders
 
         #height from bottom of robot to camera tower
-        self.HEIGHT = 1000
+        self.HEIGHT = 1000 #actually about 450
         
-        #self.zone = self.R.zone
-        self.zone = 2
+        self.zone = self.R.zone
         self.markersList = [[25,26,27,0,1,2], [4,5,6,7,8,9], [11,12,13,14,15,16], [18,19,20,21,22,23]]
         self.homeMarkers = self.markersList[self.zone][1:-1]
         self.adjacentMarkers = self.markersList[(self.zone + 1)%4]
@@ -26,12 +25,12 @@ class robot:
         print(self.homeMarkers)
 
         self.R.ruggeduino.command("g")
-
-        
+        self.R.ruggeduino.command("j")
+        time.sleep(3.1)
         self.R.ruggeduino.command("c")
         time.sleep(1.1)
         self.R.ruggeduino.command("b")
-
+        time.sleep(1.1)
     
     def moveDist(self, dist, speed=0.5,braking = True):
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
@@ -150,6 +149,7 @@ class robot:
         self.R.ruggeduino.command("d")
         time.sleep(1.1)
         self.R.ruggeduino.command("e")
+        time.sleep(1.1)
         #value tbd during testing 
         print(f"When grabbing, lastDist = {self.lastDist}")
         #self.moveDist(self.lastDist-100)
@@ -173,6 +173,7 @@ class robot:
         self.R.ruggeduino.command("d")
         time.sleep(1.1)
         self.R.ruggeduino.command("e")
+        time.sleep(1.1)
         self.moveDist(-800)
         
     def faceMarker(self, targetMarkers):
@@ -188,7 +189,7 @@ class robot:
         while counting < 18:
             self.R.motor_board.motors[0].power = 0.3
             self.R.motor_board.motors[1].power = -0.3
-            time.sleep(1.1)
+            time.sleep(0.5)
             self.R.motor_board.motors[0].power = 0
             self.R.motor_board.motors[1].power = 0
             time.sleep(0.3)
