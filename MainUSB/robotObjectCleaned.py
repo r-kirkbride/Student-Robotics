@@ -24,13 +24,10 @@ class robot:
 
         print(self.homeMarkers)
 
-        self.R.ruggeduino.command("g")
         self.R.ruggeduino.command("j")
-        time.sleep(3.1)
-        self.R.ruggeduino.command("c")
-        time.sleep(1.1)
+        time.sleep(1.3)
         self.R.ruggeduino.command("b")
-        time.sleep(1.1)
+        time.sleep(0.3)
     
     def moveDist(self, dist, speed=0.5,braking = True):
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
@@ -147,16 +144,12 @@ class robot:
         
         #actualDist = math.sqrt((dist ** 2) - (self.HEIGHT ** 2))
         self.R.ruggeduino.command("d")
-        time.sleep(1.1)
-        self.R.ruggeduino.command("e")
-        time.sleep(1.1)
+        time.sleep(0.3)
         #value tbd during testing 
         print(f"When grabbing, lastDist = {self.lastDist}")
-        #self.moveDist(self.lastDist-100)
-        self.R.ruggeduino.command("c")
-        time.sleep(1.1)
+        self.moveDist(self.lastDist-100)
         self.R.ruggeduino.command("b")
-        time.sleep(1.1)
+        time.sleep(0.3)
         self.moveDist(-800)
 
     def releaseToken(self):
@@ -171,10 +164,10 @@ class robot:
         self.moveDist(self.lastDist-700)
 
         self.R.ruggeduino.command("d")
-        time.sleep(1.1)
-        self.R.ruggeduino.command("e")
-        time.sleep(1.1)
+        time.sleep(0.3)
         self.moveDist(-800)
+        self.R.ruggeduino.command("b")
+        time.sleep(0.3)
         
     def faceMarker(self, targetMarkers):
         flag = False
