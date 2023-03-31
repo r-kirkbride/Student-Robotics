@@ -28,28 +28,16 @@ void setup() {
   delay(1000);
   reset[0] = analogRead(leftPot);
   reset[1] = analogRead(rightPot);
-  Serial.print("Reset:");
-  Serial.print(reset[0]);
-  Serial.print(",");
-  Serial.println(reset[1]);
   leftServo.write(45);
   rightServo.write(90);
   delay(1000);
   hold[0] = analogRead(leftPot);
   hold[1] = analogRead(rightPot);
-  Serial.print("Hold:");
-  Serial.print(hold[0]);
-  Serial.print(",");
-  Serial.println(hold[1]);
   leftServo.write(135);
   rightServo.write(0);
   delay(1000);
   open[0] = analogRead(leftPot);
   open[1] = analogRead(rightPot);
-  Serial.print("Open:");
-  Serial.print(open[0]);
-  Serial.print(",");
-  Serial.println(open[1]);
   pinMode(4, INPUT_PULLUP);
   pinMode(2, INPUT_PULLUP);
   pinMode(3, INPUT_PULLUP);
@@ -159,29 +147,40 @@ void loop() {
         rightServo.attach(10);
         leftServo.write(0);
         rightServo.write(135);
+        break;
       case 'b': //hold box position leftServo
         leftServo.write(45);
         delay(1000);
-        Serial.println(analogRead(leftPot));
-        if ((analogRead(leftPot) < hold[0] - POT_TOLERANCE)&&(analogRead(leftPot) > hold[0] + POT_TOLERANCE)) {
+        //Serial.println(analogRead(leftPot));
+        if ((analogRead(leftPot) < hold[0] - POT_TOLERANCE)||(analogRead(leftPot) > hold[0] + POT_TOLERANCE)) {
           leftServo.write(135);
-          Serial.println("Stuck!");
+          //Serial.println("failed");
         }
         break;
       case 'c': //hold box position rightServo
         rightServo.write(90);
         delay(1000);
-        Serial.println(analogRead(rightPot));
-        if ((analogRead(rightPot) < hold[1] - POT_TOLERANCE)&&(analogRead(rightPot) > hold[1] + POT_TOLERANCE)) {
+        //Serial.println(analogRead(rightPot));
+        if ((analogRead(rightPot) < hold[1] - POT_TOLERANCE)||(analogRead(rightPot) > hold[1] + POT_TOLERANCE)) {
           rightServo.write(0);
-          Serial.println("Stuck!");
+          //Serial.println("failed");
         }
         break;
       case 'd': //open leftServo
         leftServo.write(135);
+        delay(1000);
+        if ((analogRead(leftPot) < open[0] - POT_TOLERANCE)||(analogRead(leftPot) > open[0] + POT_TOLERANCE)) {
+          leftServo.write(45);
+          //Serial.println("failed");
+        }
         break;
       case 'e': //open rightServo
         rightServo.write(0);
+        delay(1000);
+        if ((analogRead(rightPot) < open[0] - POT_TOLERANCE)||(analogRead(rightPot) > open[0] + POT_TOLERANCE)) {
+          rightServo.write(90);
+          //Serial.println("failed");
+        }
         break;
       //KEGS SR additions end
       default:
