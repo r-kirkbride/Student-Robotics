@@ -17,7 +17,7 @@ class robot:
         
         self.zone = self.R.zone
         self.markersList = [[25,26,27,0,1,2], [4,5,6,7,8,9], [11,12,13,14,15,16], [18,19,20,21,22,23]]
-        self.homeMarkers = self.markersList[self.zone][2:-1]
+        self.homeMarkers = self.markersList[self.zone][2:-1] # could be [1:-1]
         self.adjacentMarkers = self.markersList[(self.zone + 1)%4]
         self.oppositeMarkers = self.markersList[(self.zone + 2)%4]
         self.endMarkers = self.markersList[(self.zone + 3)%4]
@@ -59,7 +59,7 @@ class robot:
                     stuck = True
             else:
                 stuck = False
-            if stuck and time.time() - timeTrack > 5:
+            if stuck and time.time() - timeTrack > 2:
                 self.moveDist(-500*reverseMultiplier)
                 return
             leftTrack = encLeft
@@ -102,7 +102,7 @@ class robot:
                     stuck = True
             else:
                 stuck = False
-            if stuck and time.time() - timeTrack >5:
+            if stuck and time.time() - timeTrack > 2:
                 self.moveDist(-500)
                 return
             track = enc
@@ -152,7 +152,7 @@ class robot:
                     stuck = True
             else:
                 stuck = False
-            if stuck and time.time() - timeTrack > 5:
+            if stuck and time.time() - timeTrack > 2:
                 self.moveDist(-500)
                 return
             leftTrack = encLeft
