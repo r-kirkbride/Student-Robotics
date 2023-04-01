@@ -247,7 +247,11 @@ class robot:
             if marker.id == marker_id:
                 usedMarker = marker
         if usedMarker == None:
-            return
+            if marker_id == 73:
+                return
+            else:
+                self.faceMarker(marker_id)
+                self.goToMarker(marker_id)
         else:
             print(f"used marker id: {usedMarker.id}")
             #adds 50mm buffer between robot and object
@@ -272,6 +276,7 @@ class robot:
                         break
                 print(f"distance: {dist}")
                 print(f"marker ids: {marker_ids}")
+                
                 if angle > 0:
                     speed = -0.15
                 else:
