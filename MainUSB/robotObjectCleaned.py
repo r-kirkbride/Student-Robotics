@@ -25,8 +25,10 @@ class robot:
         print(self.homeMarkers)
 
         self.R.ruggeduino.command("j")
-        time.sleep(1.3)
+        time.sleep(3)
         self.R.ruggeduino.command("b")
+        time.sleep(0.3)
+        self.R.ruggeduino.command("c")
         time.sleep(0.3)
     
     def moveDist(self, dist, speed=0.5,braking = True):
@@ -145,10 +147,14 @@ class robot:
         #actualDist = math.sqrt((dist ** 2) - (self.HEIGHT ** 2))
         self.R.ruggeduino.command("d")
         time.sleep(0.3)
+        self.R.ruggeduino.command("e")
+        time.sleep(0.3)
         #value tbd during testing 
         print(f"When grabbing, lastDist = {self.lastDist}")
         self.moveDist(self.lastDist-100)
         self.R.ruggeduino.command("b")
+        time.sleep(0.3)
+        self.R.ruggeduino.command("c")
         time.sleep(0.3)
         self.moveDist(-800)
 
@@ -165,8 +171,12 @@ class robot:
 
         self.R.ruggeduino.command("d")
         time.sleep(0.3)
+        self.R.ruggeduino.command("e")
+        time.sleep(0.3)
         self.moveDist(-800)
         self.R.ruggeduino.command("b")
+        time.sleep(0.3)
+        self.R.ruggeduino.command("c")
         time.sleep(0.3)
         
     def faceMarker(self, targetMarkers):
