@@ -84,9 +84,9 @@ class robot:
         degrees = (dist/CIRCUMFERENCE)*DEGREES_PER_ROT #number of degrees to rotate
         reverseMultiplier = speed/abs(speed)
         self.R.ruggeduino.command("s")
-        ruggeduinoCommand , motorNo = "y" , 1
+        ruggeduinoCommand , motorNo = "x" , 0
         if angle >= 0:
-            ruggeduinoCommand , motorNo = "x" , 0
+            ruggeduinoCommand , motorNo = "y" , 1
 
         
         enc = int(self.R.ruggeduino.command(ruggeduinoCommand))
@@ -535,7 +535,7 @@ class robot:
         if len(wantedMarkers) != 0:
             
             print("did NOT have to do facemarker to retrieve")
-            self.goToMarker(wantedMarkers[0], minDist=1100)
+            self.goToMarker(wantedMarkers[0], minDist=500)
             self.releaseToken()
             self.rotateDeg(turn)
         
@@ -546,13 +546,13 @@ class robot:
             if closestMarker != None:
                 
                 print("DID have to do facemarker to retrieve")
-                self.goToMarker(closestMarker, minDist=1100) # changed from 500
+                self.goToMarker(closestMarker, minDist=500)
                 self.releaseToken()
                 self.rotateDeg(turn)
             
             else:
                 
-                print("")
+                print("Running close to corner")
                 
 
                 #IMPORTANT
