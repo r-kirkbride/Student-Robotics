@@ -277,19 +277,18 @@ class robot:
                 print(f"distance: {dist}")
                 print(f"marker ids: {marker_ids}")
                 
+                
+                
                 if angle > 0:
-                    speed = -0.15
+                    turn = -15
                 else:
-                    speed = 0.15
+                    turn = 15
                 print(angle)
                 print(speed)
                 if abs(angle) > 0.08:
-                    self.R.motor_board.motors[0].power = speed
-                    self.R.motor_board.motors[1].power = -speed
-                    time.sleep(0.4)
-                    self.R.motor_board.motors[0].power = 0
-                    self.R.motor_board.motors[1].power = 0
+                    self.rotateDeg(turn)
                     print("corrected")
+                
                 if usedMarker.id in marker_ids:
                     pass
                 else:
