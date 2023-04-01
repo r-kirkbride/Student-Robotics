@@ -196,9 +196,9 @@ class robot:
         
         #value tbd during testing 
         print(f"When releasing, lastDist = {self.lastDist}")
-        self.moveDist((self.lastDist))
-        self.moveDist((-500))
-        #self.moveDist((-(self.lastDist-100)))
+        self.moveDist(self.lastDist)
+        self.moveDist(-500)
+        #self.moveDist(-(self.lastDist-100))
         
     def faceMarker(self, targetMarkers):
         flag = False
@@ -236,7 +236,7 @@ class robot:
 
 
 
-    def goToMarker(self, marker_id, speed=0.5, minDist=1050):
+    def goToMarker(self, marker_id, speed=0.5, minDist=1050, correction=True):
 
         self.lastDist = 3000
 
@@ -278,16 +278,16 @@ class robot:
                 print(f"marker ids: {marker_ids}")
                 
                 
-                
-                if angle > 0:
-                    turn = -15
-                else:
-                    turn = 15
-                print(angle)
-                print(speed)
-                if abs(angle) > 0.08:
-                    self.rotateDeg(turn)
-                    print("corrected")
+                if correction:
+                    if angle > 0:
+                        turn = -15
+                    else:
+                        turn = 15
+                    print(angle)
+                    print(speed)
+                    if abs(angle) > 0.08:
+                        self.rotateDeg(turn)
+                        print("corrected")
                 
                 if usedMarker.id in marker_ids:
                     pass
@@ -344,12 +344,12 @@ class robot:
 
         if self.count == 0:
 
-            self.goToMarker(73)
+            self.goToMarker(73, correction = False)
             print("we have gone to 73, to be grabbed")
             #dist = 2
             self.grabToken()
             print("box grabbed")
-            self.turnDeg(-240)
+            self.turnDeg(240)
             return
             
         else:
@@ -369,7 +369,7 @@ class robot:
 
                     self.goToMarker(73)
                     self.grabToken()
-                    self.turnDeg(-240)
+                    self.turnDeg(240)
 
                 else:
                     
@@ -425,7 +425,7 @@ class robot:
                             self.moveDist(500)  #maybe this is causing the robot to run into the wall
                         self.goToMarker(73)
                         self.grabToken()
-                        self.turnDeg(-210)
+                        self.turnDeg(240)
                     
                     else:
 
@@ -533,7 +533,8 @@ class robot:
                 wantedMarkers.append(marker)
             
         if len(wantedMarkers) != 0:
-
+            
+            print("did NOT have to do facemarker to retrieve")
             self.goToMarker(wantedMarkers[0], minDist=1100)
             self.releaseToken()
             self.rotateDeg(turn)
@@ -543,12 +544,15 @@ class robot:
             closestMarker = self.faceMarker(targetMarkers)
 
             if closestMarker != None:
-
-                self.goToMarker(closestMarker, minDist=500)
+                
+                print("DID have to do facemarker to retrieve")
+                self.goToMarker(closestMarker, minDist=1100) # changed from 500
                 self.releaseToken()
                 self.rotateDeg(turn)
             
             else:
+                
+                print("")
                 
 
                 #IMPORTANT
@@ -557,7 +561,7 @@ class robot:
                         
                     closeToReturningCorner = self.adjacentMarkers[0:2]
                 else:
-                    closeToReturningCorner = self.endMarkers[4:5]
+                    closeToReturningCorner = self.endMarkers[4:]
                 
 
                 closestMarker = self.faceMarker(closeToReturningCorner)
