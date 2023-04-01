@@ -17,19 +17,14 @@ class robot:
         
         self.zone = self.R.zone
         self.markersList = [[25,26,27,0,1,2], [4,5,6,7,8,9], [11,12,13,14,15,16], [18,19,20,21,22,23]]
-        self.homeMarkers = self.markersList[self.zone][1:-1]
+        self.homeMarkers = self.markersList[self.zone][2:-1]
         self.adjacentMarkers = self.markersList[(self.zone + 1)%4]
         self.oppositeMarkers = self.markersList[(self.zone + 2)%4]
         self.endMarkers = self.markersList[(self.zone + 3)%4]
 
         print(self.homeMarkers)
 
-        self.R.ruggeduino.command("g")
-        #time.sleep(3)
-        self.R.ruggeduino.command("b")
-        #time.sleep(0.3)
-        self.R.ruggeduino.command("c")
-        #time.sleep(0.3)
+        
     
     def moveDist(self, dist, speed=0.5,braking = True):
         CIRCUMFERENCE = 100 * math.pi #circumference of the wheels
@@ -44,6 +39,9 @@ class robot:
         self.R.motor_board.motors[1].power = speed
         encLeft = int(self.R.ruggeduino.command("x"))
         encRight = int(self.R.ruggeduino.command("y"))
+        leftTrack = encLeft
+        rightTrack = encRight
+        stuck = False
         while (encLeft + encRight)/2 < degrees:
             #print(f"L:{encLeft}, {self.R.motor_board.motors[0].power}\tR:{encRight}, {self.R.motor_board.motors[1].power}")
             encLeft = int(self.R.ruggeduino.command("x"))
@@ -55,6 +53,17 @@ class robot:
             else:
                 self.R.motor_board.motors[0].power = speed
                 self.R.motor_board.motors[1].power = speed
+            if leftTrack == encLeft or rightTrack == encRight:
+                if stuck == False:
+                    timeTrack = time.time()
+                    stuck = True
+            else:
+                stuck = False
+            if stuck and time.time() - timeTrack > 5:
+                self.moveDist(-500*reverseMultiplier)
+                return
+            leftTrack = encLeft
+            rightTrack = encRight
             time.sleep(0.05)
         if braking:
             self.R.motor_board.motors[0].power = -1*reverseMultiplier
@@ -79,11 +88,24 @@ class robot:
         if angle >= 0:
             ruggeduinoCommand , motorNo = "x" , 0
 
+        
         enc = int(self.R.ruggeduino.command(ruggeduinoCommand))
+        track = enc
+        stuck = False
         while enc < degrees:
             print(enc)
             enc = int(self.R.ruggeduino.command(ruggeduinoCommand))
             self.R.motor_board.motors[motorNo].power = speed
+            if track == enc:
+                if stuck == False:
+                    timeTrack = time.time()
+                    stuck = True
+            else:
+                stuck = False
+            if stuck and time.time() - timeTrack >5:
+                self.moveDist(-500)
+                return
+            track = enc
             time.sleep(0.005)
         
         if braking:
@@ -110,6 +132,9 @@ class robot:
         
         encLeft = int(self.R.ruggeduino.command("x"))
         encRight = int(self.R.ruggeduino.command("y"))
+        leftTrack = encLeft
+        rightTrack = encRight
+        stuck = False
         while (encLeft + encRight)/2 < degrees:
             #print(f"L:{encLeft}, {self.R.motor_board.motors[0].power}\tR:{encRight}, {self.R.motor_board.motors[1].power}")
             encLeft = int(self.R.ruggeduino.command("x"))
@@ -121,6 +146,17 @@ class robot:
             else:
                 self.R.motor_board.motors[0].power = speed * leftMultiplier
                 self.R.motor_board.motors[1].power = speed * rightMultiplier
+            if leftTrack == encLeft or rightTrack == encRight:
+                if stuck == False:
+                    timeTrack = time.time()
+                    stuck = True
+            else:
+                stuck = False
+            if stuck and time.time() - timeTrack > 5:
+                self.moveDist(-500)
+                return
+            leftTrack = encLeft
+            rightTrack = encRight
             time.sleep(0.05)
         if braking:
             self.R.motor_board.motors[0].power = -1*leftMultiplier
@@ -145,18 +181,11 @@ class robot:
         #dist = self.lastDist
         
         #actualDist = math.sqrt((dist ** 2) - (self.HEIGHT ** 2))
-        self.R.ruggeduino.command("d")
-        #time.sleep(0.3)
-        self.R.ruggeduino.command("e")
-        #time.sleep(0.3)
+        
         #value tbd during testing 
-        print(f"When grabbing, lastDist = {self.lastDist}")
-        self.moveDist(self.lastDist-50)
-        self.R.ruggeduino.command("b")
-        #time.sleep(0.3)
-        self.R.ruggeduino.command("c")
-        #time.sleep(0.3)
-        self.moveDist(-800)
+        print(f"When grabbing, lastDist = {self.lastDist-100}")
+        self.moveDist(self.lastDist-100)
+        
 
     def releaseToken(self):
 
@@ -167,17 +196,9 @@ class robot:
         
         #value tbd during testing 
         print(f"When releasing, lastDist = {self.lastDist}")
-        self.moveDist(self.lastDist-700)
-
-        self.R.ruggeduino.command("d")
-        #time.sleep(0.3)
-        self.R.ruggeduino.command("e")
-        #time.sleep(0.3)
-        self.moveDist(-800)
-        self.R.ruggeduino.command("b")
-        #time.sleep(0.3)
-        self.R.ruggeduino.command("c")
-        #time.sleep(0.3)
+        self.moveDist((self.lastDist))
+        self.moveDist((-500))
+        #self.moveDist((-(self.lastDist-100)))
         
     def faceMarker(self, targetMarkers):
         flag = False
@@ -190,11 +211,7 @@ class robot:
 
         #add clause for when counting is greater than 18 that identifies a new closeset token if we cant see any
         while counting < 18:
-            self.R.motor_board.motors[0].power = 0.3
-            self.R.motor_board.motors[1].power = -0.3
-            time.sleep(0.5)
-            self.R.motor_board.motors[0].power = 0
-            self.R.motor_board.motors[1].power = 0
+            self.rotateDeg(30)
             time.sleep(0.3)
             markers = self.R.camera.see()
             for i in range(len(markers)):
@@ -219,9 +236,9 @@ class robot:
 
 
 
-    def goToMarker(self, marker_id, speed=0.5, minDist=1100):
+    def goToMarker(self, marker_id, speed=0.5, minDist=1050):
 
-        self.lastDist = 800
+        self.lastDist = 3000
 
         #self.faceMarker(marker_id)
         markers = self.R.camera.see()
@@ -328,7 +345,7 @@ class robot:
             #dist = 2
             self.grabToken()
             print("box grabbed")
-            self.rotateDeg(-180)
+            self.turnDeg(-240)
             return
             
         else:
@@ -342,13 +359,13 @@ class robot:
             if len(wantedMarkers) != 0:
                 
                 #CHANGE TO 1000 FOR THE ACTUAL COMPETITION (MAYBE)
-                self.moveDist(500)
+                self.moveDist(700)
                 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
                 if 73 in markers:
 
                     self.goToMarker(73)
                     self.grabToken()
-                    self.rotateDeg(-180)
+                    self.turnDeg(-240)
 
                 else:
                     
@@ -404,20 +421,20 @@ class robot:
                             self.moveDist(500)  #maybe this is causing the robot to run into the wall
                         self.goToMarker(73)
                         self.grabToken()
-                        self.rotateDeg(-180)
+                        self.turnDeg(-210)
                     
                     else:
 
                         self.goToMarker(closestMarker, 1600)
                         
                         #should turn 90 clockwise
-                        self.rotateDeg(90)
+                        self.turnDeg(90)
                         markers = self.R.camera.see_ids()
                         if 73 in markers:
                         
                             self.goToMarker(73)
                             self.grabToken()
-                            self.rotateDeg(120)
+                            self.turnDeg(120)
                         
                         else:
                             
@@ -513,7 +530,7 @@ class robot:
             
         if len(wantedMarkers) != 0:
 
-            self.goToMarker(wantedMarkers[0], minDist=1050)
+            self.goToMarker(wantedMarkers[0], minDist=1100)
             self.releaseToken()
             self.rotateDeg(turn)
         
@@ -523,7 +540,7 @@ class robot:
 
             if closestMarker != None:
 
-                self.goToMarker(closestMarker, minDist=1050)
+                self.goToMarker(closestMarker, minDist=500)
                 self.releaseToken()
                 self.rotateDeg(turn)
             
@@ -536,7 +553,7 @@ class robot:
                         
                     closeToReturningCorner = self.adjacentMarkers[0:2]
                 else:
-                    closeToReturningCorner = self.endMarkers[4:6]
+                    closeToReturningCorner = self.endMarkers[4:5]
                 
 
                 closestMarker = self.faceMarker(closeToReturningCorner)
@@ -588,7 +605,6 @@ class robot:
     def main(self):
 
         start = time.time()
-        print(self.R.camera.see_ids())
 
         self.count = 0
 
