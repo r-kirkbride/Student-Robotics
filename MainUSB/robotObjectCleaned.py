@@ -25,10 +25,8 @@ class robot:
         print(self.homeMarkers)
 
         self.R.ruggeduino.command("j")
-        time.sleep(3)
+        time.sleep(1.3)
         self.R.ruggeduino.command("b")
-        time.sleep(0.3)
-        self.R.ruggeduino.command("c")
         time.sleep(0.3)
     
     def moveDist(self, dist, speed=0.5,braking = True):
@@ -147,14 +145,10 @@ class robot:
         #actualDist = math.sqrt((dist ** 2) - (self.HEIGHT ** 2))
         self.R.ruggeduino.command("d")
         time.sleep(0.3)
-        self.R.ruggeduino.command("e")
-        time.sleep(0.3)
         #value tbd during testing 
         print(f"When grabbing, lastDist = {self.lastDist}")
         self.moveDist(self.lastDist-100)
         self.R.ruggeduino.command("b")
-        time.sleep(0.3)
-        self.R.ruggeduino.command("c")
         time.sleep(0.3)
         self.moveDist(-800)
 
@@ -171,12 +165,8 @@ class robot:
 
         self.R.ruggeduino.command("d")
         time.sleep(0.3)
-        self.R.ruggeduino.command("e")
-        time.sleep(0.3)
         self.moveDist(-800)
         self.R.ruggeduino.command("b")
-        time.sleep(0.3)
-        self.R.ruggeduino.command("c")
         time.sleep(0.3)
         
     def faceMarker(self, targetMarkers):
@@ -351,8 +341,14 @@ class robot:
                     self.rotateDeg(-180)
 
                 else:
-
-                    self.fetchTargetMarkers = self.markersList[(self.zone + 3)% 4][0:-1]
+                    
+                    if self.fetchTargetMarkers == self.markersList[(self.zone + 1)% 4][0:-1]:
+                        
+                        self.fetchTargetMarkers = self.markersList[(self.zone + 3)% 4][0:-1]
+                    else:
+                        self.fetchTargetMarkers = self.markersList[(self.zone + 1)% 4][0:-1]
+                    
+                    self.repeat = True
                     return
 
                     
@@ -414,36 +410,47 @@ class robot:
                             self.rotateDeg(120)
                         
                         else:
-                            self.rotateDeg(30)
-
-                            markers = self.R.camera.see_ids()
-                            wantedMarkers = []
-
-                            for marker in markers:
-                                if marker in targetMarkers:
-                                    wantedMarkers.append(marker)
-                            if 73 in markers and len(wantedMarkers) != 0:
-                                self.goToMarker(73)
-                                self.grabToken()
-                                self.rotateDeg(-180)
                             
+                            if self.fetchTargetMarkers == self.markersList[(self.zone + 1)% 4][0:-1]:
+                        
+                                self.fetchTargetMarkers = self.markersList[(self.zone + 3)% 4][0:-1]
                             else:
+                                self.fetchTargetMarkers = self.markersList[(self.zone + 1)% 4][0:-1]
+                            
+                            self.repeat = True
+                            return 
+                            
+                            #self.rotateDeg(30)
 
-                                self.rotateDeg(-60)
+                            #markers = self.R.camera.see_ids()
+                            
+                            #wantedMarkers = []
 
-                                markers = self.R.camera.see_ids()
-                                wantedMarkers = []
+                            #for marker in markers:
+                            #    if marker in targetMarkers:
+                            #        wantedMarkers.append(marker)
+                            #if 73 in markers and len(wantedMarkers) != 0:
+                            #    self.goToMarker(73)
+                            #    self.grabToken()
+                            #    self.rotateDeg(-180)
+                            
+                            #else:
 
-                                for marker in markers:
-                                    if marker in targetMarkers:
-                                        wantedMarkers.append(marker)
-                                if 73 in markers and len(wantedMarkers) != 0:
-                                    self.goToMarker(73)
-                                    self.grabToken()
-                                    self.rotateDeg(-180)
+                            #    self.rotateDeg(-60)
+
+                            #    markers = self.R.camera.see_ids()
+                             #   wantedMarkers = []
+
+                             #   for marker in markers:
+                             #       if marker in targetMarkers:
+                             #           wantedMarkers.append(marker)
+                              #  if 73 in markers and len(wantedMarkers) != 0:
+                              #      self.goToMarker(73)
+                               #     self.grabToken()
+                                #    self.rotateDeg(-180)
                                 
-                                else:
-                                    return
+                                #else:
+                                #    return
 
                 else:
                     #place to put escape method because no disered markers can be seen
@@ -515,7 +522,12 @@ class robot:
 
                 #IMPORTANT
                 #currently only working in adjacent corner
-                closeToReturningCorner = self.adjacentMarkers[0:2]
+                if self.fetchTargetMarkers == self.markersList[(self.zone + 1)% 4][0:-1]:
+                        
+                    closeToReturningCorner = self.adjacentMarkers[0:2]
+                else:
+                    closeToReturningCorner = self.endMarkers[4:6]
+                
 
                 closestMarker = self.faceMarker(closeToReturningCorner)
 
@@ -587,7 +599,7 @@ class robot:
             while self.repeat == True:
                 
                 if time.time() - start > 120:
-                    self.fetchTargetMarkers = self.markersList[(self.zone + 3)% 4][0:-1]
+                    self.fetchTargetMarkers = self.markersList[(self.zone + 1)% 4][0:-1]
                 #if (self.count % 3) == 2:
 
                  #   if time.time() - start < 120:
